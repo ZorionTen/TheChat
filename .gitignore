@@ -1,2 +1,4 @@
 .*
+server/his.json
+server/IPS.json
 !/.gitignore
