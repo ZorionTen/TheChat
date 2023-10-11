@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <script type="text/javascript" src="/eel.js"></script>
+        <script type="text/javascript" src="/assets/script.js"></script>
+        <link rel="stylesheet" href="/assets/style.css" />
+        <script
+            src="https://cdn.socket.io/4.6.0/socket.io.min.js"
+            integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+"
+            crossorigin="anonymous"
+        ></script>
+    </head>
+
+    <body>
+        <div class="container">
+            <div id="settings">
+                <input id="inp_name" type="text" placeholder="Enter Username" />
+                <label
+                    ><input
+                        id="show_notif"
+                        checked
+                        type="checkbox"
+                    />Notifications</label
+                >
+            </div>
+            <p id="meme_heading">Online</p>
+            <div id="mems"></div>
+            <button class="side_button" onclick="toTray()">Minimize</button>
+            <button class="side_button" onclick="toBottom()">Scroll To Bottom</button>
+        </div>
+        <div class="container main">
+            <div id="chats"></div>
+            <div id="input"><input placeholder="Converse #" /></div>
+        </div>
+    </body>
+</html>
