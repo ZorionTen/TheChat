@@ -24,12 +24,13 @@ def log(text):
 
 
 def to_tray(a, b):
-    print(a,b)
-    print(eel._shutdown)
+    for i in b:
+        i.close()
+    exit()
 
 
 def from_tray():
-    return eel.fromTray()()
+    eel.show(f'http://localhost:{PORT}')
 
 
 if __name__ == '__main__':
@@ -38,9 +39,8 @@ if __name__ == '__main__':
     eel.start('index.html',
               port=PORT,
               size=(1600, 800),
-              block=False,
-              close_callback=to_tray,
+              block=True,
               )
-    while True:
-        eel.sleep(1)
+    # while True:
+    #     eel.sleep(1)
     sys_tray.stop()
