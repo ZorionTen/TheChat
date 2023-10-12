@@ -51,7 +51,5 @@ if __name__ == '__main__':
               port=PORT,
               size=(1200, 800),
               #   close_callback=to_tray,
-              cmdline_args=['--start-fullscreen', '--incognito',
-                            '--disable-extensions', '--kiosk', '--user-data-dir=./profile'],
               )
     sys_tray.stop()

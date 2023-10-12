@@ -19,7 +19,7 @@
         <script>
             onload = () => {
                 eel.get_hs()((data) => {
-                    if(data)
+                    if(data && data!='cedcoss' && data!='ubuntu')
                     {
                         document.querySelector("#content input").setAttribute('readonly',true)
                     }
