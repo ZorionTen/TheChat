@@ -3,13 +3,10 @@ import socketio
 import json
 
 IPS = json.load(open('IPS.json'))
-
-CERT = 'example.com+5.pem'
-KEY = 'example.com+5-key.pem'
-IP = '0.0.0.0'
+IP = '172.16.50.122'
 MAX_MESSAGES = 50
 
-WEB_PATH = '/home/zorionten/Programs/webChat/client/views'
+WEB_PATH = '/home/cedcoss/Programs/TheChat/client/views'
 
 messages = []
 try:

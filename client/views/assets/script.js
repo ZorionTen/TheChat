@@ -6,7 +6,7 @@ let socket;
 try {
     eel.expose("toTray");
     function toTray() {
-        socket.close()
+        socket.close();
         try {
             eel.resize(0, 0);
             isHidden = true;
@@ -33,31 +33,38 @@ try {
 }
 
 onload = () => {
-    noti = document.querySelector("#show_notif");
-    socket = io("http://0.0.0.0:51998");
-    socket.on("message", function (data) {
-        showMessages(data);
-    });
+    try {
+        eel.get_server_ip()((ip) => {
+            eel.log('Connecting to server '+ip);
+            socket = io(`http://${ip}:51998`);
+            socket.on("message", function (data) {
+                showMessages(data);
+            });
 
-    socket.on("command", (data) => {
-        if (data.hasOwnProperty("data")) {
-            if (data.data.hasOwnProperty("ip")) {
-                id = data.data.ip;
-            } else if (data.data.hasOwnProperty("members")) {
-                let mems = document.querySelector("#mems");
-                mems.innerHTML = "";
-                for (let i of data.data.members) {
-                    mems.innerHTML += `<span>${i}</span>`;
+            socket.on("command", (data) => {
+                if (data.hasOwnProperty("data")) {
+                    if (data.data.hasOwnProperty("ip")) {
+                        id = data.data.ip;
+                    } else if (data.data.hasOwnProperty("members")) {
+                        let mems = document.querySelector("#mems");
+                        mems.innerHTML = "";
+                        for (let i of data.data.members) {
+                            mems.innerHTML += `<span>${i}</span>`;
+                        }
+                    }
                 }
-            }
+            });
+            socket.emit("command", "history", (e) => {
+                showMessages(e);
+            });
+        });
+    } catch ({ name, msg }) {
+        if (name == "ReferenceError") {
+            console.log(`No eel, You're fucked`);
         }
-    });
-
+    }
+    noti = document.querySelector("#show_notif");
     chats = document.querySelector("#chats");
-    socket.emit("command", "history", (e) => {
-        showMessages(e);
-    });
-
     document.querySelector("#input input").addEventListener("keypress", (e) => {
         if (e.key == "Enter" && e.shiftKey) {
             e.target.value += "\\n";
@@ -75,7 +82,6 @@ onload = () => {
         eel.log("Closing");
         socket.close();
     });
-
 }; // Close onload
 
 function showMessages(msgs) {

@@ -1,13 +1,5 @@
 [
     {
-        "text": "tesing 123",
-        "name": "",
-        "from": "172.16.52.138",
-        "sid": "FPpkC3mznvLbGZRTAAAH",
-        "s_name": "Tanveer",
-        "m_id": 8
-    },
-    {
         "text": "test",
         "name": "none",
         "from": "172.16.52.138",
@@ -397,6 +389,14 @@
         "from": "127.0.0.1",
         "sid": "UYwmD2nReLi8rZ4XAAA_",
         "s_name": "None",
+        "m_id": 50
+    },
+    {
+        "text": "Test",
+        "name": "",
+        "from": "172.16.50.122",
+        "sid": "k1UWZiFp1H4nngP0AAAN",
+        "s_name": "Zaid",
         "m_id": 50
     }
 ]
