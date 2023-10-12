@@ -1,13 +1,5 @@
 [
     {
-        "text": "test",
-        "name": "none",
-        "from": "172.16.52.138",
-        "sid": "FPpkC3mznvLbGZRTAAAH",
-        "s_name": "Tanveer",
-        "m_id": 9
-    },
-    {
         "text": "Create a detailed logo for a chatting app named 'Chit Chat.' The logo should cleverly incorporate the initials 'CC,' which is a word play on the common email abbreviation. The design should reflect the essence of a user-friendly and engaging chat application, using 'CC' in a creative and visually appealing manner.",
         "name": "",
         "from": "172.16.50.127",
@@ -396,6 +388,14 @@
         "name": "",
         "from": "172.16.50.122",
         "sid": "k1UWZiFp1H4nngP0AAAN",
+        "s_name": "Zaid",
+        "m_id": 50
+    },
+    {
+        "text": "<script> alert(hi) </script>",
+        "name": "Bacon",
+        "from": "172.16.50.122",
+        "sid": "eFJEBnFzjUblxbqzAABX",
         "s_name": "Zaid",
         "m_id": 50
     }

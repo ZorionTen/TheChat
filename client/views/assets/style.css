@@ -56,7 +56,9 @@ input::placeholder {
 .main div {
     padding: 10px;
 }
-
+.sidebar {
+    width: 240px;
+}
 #mems {
     width: fit-content;
     min-width: 100%;
@@ -76,6 +78,7 @@ input::placeholder {
     flex-direction: column;
     background-color: var(--accent-dark-color);
     font-size: 16px;
+    width:100%;
 }
 
 #settings input[type="text"] {
@@ -213,4 +216,11 @@ button.side_button:hover {
     font-size: 16px;
     font-weight: bolder;
     color: var(--text-dark-color);
+}
+
+#inp_name {
+    margin: 0px;
+    padding: 10px;
+    text-align: center;
+    font-weight: bolder;
 }

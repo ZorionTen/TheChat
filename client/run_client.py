@@ -30,6 +30,9 @@ def log(text):
 def get_server_ip():
     return config.get('server', '0.0.0.0')
 
+@eel.expose 
+def get_hs():
+    return eel.socket.gethostname()
 
 def to_tray(a, b):
     for i in b:
@@ -44,8 +47,11 @@ def from_tray():
 if __name__ == '__main__':
     sys_tray.click_callback = from_tray
     sys_tray.start()
-    eel.start('index.html',
+    eel.start('login.html',
               port=PORT,
-              close_callback=to_tray,
-              size=(1600, 800))
+              size=(1200, 800),
+              #   close_callback=to_tray,
+              cmdline_args=['--start-fullscreen', '--incognito',
+                            '--disable-extensions', '--kiosk', '--user-data-dir=./profile'],
+              )
     sys_tray.stop()

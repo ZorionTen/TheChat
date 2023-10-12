@@ -65,6 +65,9 @@ onload = () => {
     }
     noti = document.querySelector("#show_notif");
     chats = document.querySelector("#chats");
+    
+    let username = sessionStorage.getItem('username')
+    document.querySelector("#inp_name").innerHTML = username;
     document.querySelector("#input input").addEventListener("keypress", (e) => {
         if (e.key == "Enter" && e.shiftKey) {
             e.target.value += "\\n";
@@ -73,7 +76,7 @@ onload = () => {
             e.target.value = "";
             socket.emit("message", {
                 text: text,
-                name: document.querySelector("#inp_name").value,
+                name: username
             });
         }
     });

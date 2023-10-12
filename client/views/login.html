@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Windows XP Login</title>
+        <script src="/eel.js"></script>
+        <link rel="stylesheet" href="/assets/login.css" />
+    </head>
+    <body>
+        <div id="window">
+            <div id="title_bar">LOGIN</div>
+            <div id="content">
+                <label id="username">Username:</label>
+                <input type="text" />
+                <button id="login" onclick="login()">Login</button>
+            </div>
+        </div>
+        <script>
+            onload = () => {
+                eel.get_hs()((data) => {
+                    if(data)
+                    {
+                        document.querySelector("#content input").setAttribute('readonly',true)
+                    }
+                    document.querySelector("#content input").value = data;
+                });
+            };
+            function login() {
+                let inp = document.querySelector("#content input");
+                let name = inp.value;
+                if (name) {
+                    sessionStorage.setItem("username", name);
+                    location.href = "index.html";
+                } else {
+                    inp.style.border = "2px solid red";
+                }
+            }
+        </script>
+    </body>
+</html>
