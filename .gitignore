@@ -1,4 +1,6 @@
 .*
+*pycache
 server/his.json
 server/IPS.json
+client/config.json
 !/.gitignore
