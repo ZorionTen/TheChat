@@ -3,12 +3,15 @@ let id;
 let noti;
 let isHidden = false;
 let socket;
+
+let eel;
+// Exposing functions to eel
 try {
     eel.expose("toTray");
     function toTray() {
         socket.close();
         try {
-            eel.resize(0, 0);
+            eel.to_tray();
             isHidden = true;
             eel.log("Hidden");
         } catch (e) {
@@ -32,11 +35,13 @@ try {
     }
 }
 
-onload = () => {
+let init = () => {
     try {
-        eel.get_server_ip()((ip) => {
+        eel.get_server_ip().then((ip) => {
             eel.log('Connecting to server '+ip);
             socket = io(`http://${ip}:51998`);
+           
+            // LISTENERS 
             socket.on("message", function (data) {
                 showMessages(data);
             });
@@ -54,6 +59,8 @@ onload = () => {
                     }
                 }
             });
+
+            // Get chat history
             socket.emit("command", "history", (e) => {
                 showMessages(e);
             });
@@ -66,6 +73,7 @@ onload = () => {
     noti = document.querySelector("#show_notif");
     chats = document.querySelector("#chats");
     
+
     let username = sessionStorage.getItem('username')
     document.querySelector("#inp_name").innerHTML = username;
     document.querySelector("#input input").addEventListener("keypress", (e) => {
@@ -79,11 +87,6 @@ onload = () => {
                 name: username
             });
         }
-    });
-
-    document.querySelector("body").addEventListener("onunload", () => {
-        eel.log("Closing");
-        socket.close();
     });
 }; // Close onload
 
@@ -132,3 +135,9 @@ function notify(title, text) {
         }
     }
 }
+
+ window.addEventListener("pywebviewready", function () {
+     console.log("ready");
+     eel = pywebview.api;
+     init();
+ });

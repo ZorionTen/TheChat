@@ -13,29 +13,37 @@
             <div id="content">
                 <label id="username">Username:</label>
                 <input type="text" />
-                <button id="login" onclick="login()">Login</button>
+                <button id="login" onclick="redir()">Login</button>
             </div>
         </div>
         <script>
-            onload = () => {
-                eel.get_hs()((data) => {
-                    if(data && data!='cedcoss' && data!='ubuntu')
-                    {
-                        document.querySelector("#content input").setAttribute('readonly',true)
+            let eel;
+
+            let init = () => {
+                eel.get_hs().then((data) => {
+                    if (data && data != "cedcoss" && data != "ubuntu") {
+                        document
+                            .querySelector("#content input")
+                            .setAttribute("readonly", true);
                     }
                     document.querySelector("#content input").value = data;
                 });
             };
-            function login() {
+            function redir() {
                 let inp = document.querySelector("#content input");
                 let name = inp.value;
                 if (name) {
                     sessionStorage.setItem("username", name);
-                    location.href = "index.html";
+                    window.location.href = "/index.html";
                 } else {
                     inp.style.border = "2px solid red";
                 }
             }
+            window.addEventListener("pywebviewready", function () {
+                console.log("ready");
+                eel = pywebview.api;
+                init();
+            });
         </script>
     </body>
 </html>
