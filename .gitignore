@@ -4,6 +4,7 @@
 *his.json
 *IPS.json
 client/config.json
+client/events.json
 client/build
 client/dist
 *.spec

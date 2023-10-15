@@ -62,16 +62,23 @@ div#content {
     outline: none;
 }
 
-#login {
+.xp_btn {
     position: absolute;
     bottom: 20px;
-    right: 20px;
     padding: 5px 20px 5px 20px;
     border: 1px solid var(--shadow);
     border-radius: 5px;
     font-size: 16px;
 }
-#login:hover,
-#login:active {
+.xp_btn:hover,
+.xp_btn:active {
     box-shadow:0px 0px 2px 2px skyblue inset;
+}
+
+#login {
+    right: 20px;
+}
+
+#quit {
+    left: 20px;
 }
