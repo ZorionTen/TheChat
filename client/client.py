@@ -77,7 +77,7 @@ def fire_open():
 
 api = Api()
 window = wv.create_window(
-    title='TheChat', url=f'{PATH}/login.html', transparent=True, js_api=api,
+    title='TheChat', transparent=True, background_color = '#202020',url=f'{PATH}/login.html', js_api=api,
     min_size=(1200, 800))
 api.window = window
 # Register events

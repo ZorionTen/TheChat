@@ -7,4 +7,5 @@ client/config.json
 client/events.json
 client/build
 client/dist
+server/database/*
 *.spec
