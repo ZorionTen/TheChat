@@ -4,13 +4,23 @@ import sys_tray
 import json
 import watcher
 import socket
+import sys
 
-config = json.load(open('./config.json'))
+try:
+    BASE_PATH = sys._MEIPASS
+except AttributeError:
+    BASE_PATH = '.'
+print(BASE_PATH)
+try:
+    config = json.load(open(BASE_PATH+'/config.json'))
+except FileNotFoundError:
+    print('[ERROR] config.json not found, Loading defaults')
+    config = {'server': '172.16.50.122'}
 
 print(f'kill -9 {os.getpid()}')
 
 PORT = config.get('port', 51999)
-PATH = config.get('views', './views')
+PATH = config.get('views', BASE_PATH+'/views')
 if not os.path.exists(PATH):
     print('Views not found')
     exit(-1)
@@ -19,13 +29,16 @@ window = None
 
 
 class Api:
-    def __init__(self, window = None):
+    def __init__(self, window=None):
         if window:
-            self.window=window
+            self.window = window
         self.kill_flag = False
+        self.hidden=False
 
     def send_notify(self, text):
-        sys_tray.notify(text)
+        print(f'hidden {self.hidden}')
+        if self.hidden:
+            sys_tray.notify(text)
 
     def log(self, text):
         print(f'[FROM PY_CLIENT] {text}')
@@ -43,26 +56,28 @@ class Api:
         if self.window:
             self.window.hide()
         watcher.start(self.from_tray)
+        self.hidden = True
         return False
 
     def from_tray(self):
-        print('restoreing')
         if self.window:
-            print(f'window found {self.window}')
             self.window.show()
-        json.dump({},open(watcher.FILE,'w'))
+        json.dump({}, open(watcher.FILE, 'w'))
+        self.hidden = False
         return 200
 
     def quit(self):
         self.kill_flag = True
         self.window.destroy()
 
+
 def fire_open():
-    json.dump({"show":1},open(watcher.FILE,"w"))
+    json.dump({"show": 1}, open(watcher.FILE, "w"))
+
 
 api = Api()
 window = wv.create_window(
-    title='TheChat', url=f'{PATH}/login.html', js_api=api,
+    title='TheChat', url=f'{PATH}/login.html', transparent=True, js_api=api,
     min_size=(1200, 800))
 api.window = window
 # Register events

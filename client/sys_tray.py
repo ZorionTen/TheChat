@@ -1,35 +1,43 @@
 import os
 import pystray
 from PIL import Image
-from multiprocessing import Process
+import sys
 
-image = Image.new('RGB',(256,256),'cyan')
+try:
+    BASE_PATH = sys._MEIPASS
+except AttributeError:
+    BASE_PATH = '.'
+
+image = Image.open(BASE_PATH+'/views/favicon.ico')
 
 click_callback = None
+
 
 def click(icon, item):
     print('[TRAY CALLBACK]---')
     print(click_callback() if click_callback else 'No callback registered')
     print('[TRAY CALLBACK]---')
 
-
-icon = pystray.Icon(name="the_chat", icon=image, title="TheChat", menu=pystray.Menu(
-    pystray.MenuItem(text="Left-Click-Action",
-                     action=click, default=True),
-))
-
 def start(block=False):
-    icon.run if block else icon.run_detached() 
+    icon.run() if block else icon.run_detached()
 
 
 def stop():
     print('Killing tray')
+    os.system(f'kill -9 {os.getpid()}')
     icon.stop()
 
 
 def notify(text):
     os.system(
-        f'notify-send -i {os.path.abspath("icon.jpeg")} "TheChat" "{text}"')
+        f'notify-send -i {BASE_PATH+"/views/favicon.ico"} "TheChat" "{text}"')
+
+
+icon = pystray.Icon("TC", image, "TheChat", menu=pystray.Menu(
+    pystray.MenuItem("??", click, default=True),
+    pystray.MenuItem("Restore", click),
+    pystray.MenuItem("Quit", stop),
+))
 
 
 if __name__ == '__main__':

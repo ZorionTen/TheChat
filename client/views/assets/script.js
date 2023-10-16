@@ -1,10 +1,15 @@
 let chats;
 let id;
 let noti;
-let isHidden = false;
+let isHidden = true;
 let socket;
 
 let eel;
+
+async function hidden(state) {
+    isHidden = state;
+    return isHidden;
+}
 // Exposing functions to eel
 try {
     eel.expose("toTray");
@@ -38,10 +43,10 @@ try {
 let init = () => {
     try {
         eel.get_server_ip().then((ip) => {
-            eel.log('Connecting to server '+ip);
+            eel.log("Connecting to server " + ip);
             socket = io(`http://${ip}:51998`);
-           
-            // LISTENERS 
+
+            // LISTENERS
             socket.on("message", function (data) {
                 showMessages(data);
             });
@@ -72,9 +77,8 @@ let init = () => {
     }
     noti = document.querySelector("#show_notif");
     chats = document.querySelector("#chats");
-    
 
-    let username = sessionStorage.getItem('username')
+    let username = sessionStorage.getItem("username");
     document.querySelector("#inp_name").innerHTML = username;
     document.querySelector("#input input").addEventListener("keypress", (e) => {
         if (e.key == "Enter" && e.shiftKey) {
@@ -84,7 +88,7 @@ let init = () => {
             e.target.value = "";
             socket.emit("message", {
                 text: text,
-                name: username
+                name: username,
             });
         }
     });
@@ -95,16 +99,17 @@ function showMessages(msgs) {
         let child = document.createElement("div");
         child.innerHTML =
             "<p>" +
-            `<span>${i.s_name || i.name} - ${i.from}</span>` +
+            `<span>${i.name} - ${i.from}</span>` +
             htmlEnc(`${i.text}`) +
             "</p>";
         chats.append(child);
         child.classList.add("message");
-        if (id == i.from) {
+        if (id == i.name) {
             child.classList.add("me");
         }
     }
-    notify("THE CHAT", "New Messages");
+    let froms = msgs.map((msg) => msg.name).join(', ');
+    notify("New Messages", `from ${froms.substring(0, 15)}...`);
     toBottom();
 }
 
@@ -124,9 +129,6 @@ function toBottom() {
 }
 
 function notify(title, text) {
-    if (!document.hasFocus() || !isHidden) {
-        return false;
-    }
     try {
         eel.send_notify(text);
     } catch ({ name, msg }) {
@@ -136,8 +138,8 @@ function notify(title, text) {
     }
 }
 
- window.addEventListener("pywebviewready", function () {
-     console.log("ready");
-     eel = pywebview.api;
-     init();
- });
+window.addEventListener("pywebviewready", function () {
+    console.log("ready");
+    eel = pywebview.api;
+    init();
+});
