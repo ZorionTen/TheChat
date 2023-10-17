@@ -8,11 +8,18 @@ from tinydb.storages import JSONStorage
 from tinydb.middlewares import CachingMiddleware
 
 IP = '0.0.0.0'
+IP = '0.0.0.0'
 MAX_MESSAGES = 50
 
 ## TODO: make web app
 # WEB_PATH = '/home/cedcoss/Programs/TheChat/client/views'
+## TODO: make web app
+# WEB_PATH = '/home/cedcoss/Programs/TheChat/client/views'
 
+DB = TinyDB('./database/messages.json',storage=CachingMiddleware(JSONStorage))
+query = Query()
+
+messages = DB.table('messages') 
 DB = TinyDB('./database/messages.json',storage=CachingMiddleware(JSONStorage))
 query = Query()
 
@@ -77,6 +84,12 @@ def disconnect(sid):
     print('disconnect ', sid)
 
 if __name__ == '__main__':
+    try:
+        server = eventlet.wsgi.server(eventlet.listen((IP, 51998)),app)
+    except Exception as e:
+        print(e)
+    finally:
+        DB.close()
     try:
         server = eventlet.wsgi.server(eventlet.listen((IP, 51998)),app)
     except Exception as e:
