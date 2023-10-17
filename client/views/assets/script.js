@@ -46,6 +46,9 @@ let init = () => {
             eel.log("Connecting to server " + ip);
             socket = io(`http://${ip}:51998`);
 
+            socket.emit("command", "history", (e) => {
+                showMessages(e);
+            });
             // LISTENERS
             socket.on("message", function (data) {
                 showMessages(data);
@@ -65,9 +68,14 @@ let init = () => {
                 }
             });
 
-            // Get chat history
-            socket.emit("command", "history", (e) => {
-                showMessages(e);
+            socket.on("edited", (data) => {
+                document.querySelector(
+                    `span[data-id="${data.uid}"]`
+                ).innerHTML = data.text;
+            });
+
+            socket.on("deleted", (data) => {
+                document.querySelector(`span[data-id="${data.uid}"]`).parentElement.parentElement.remove();
             });
         });
     } catch ({ name, msg }) {
@@ -97,18 +105,26 @@ let init = () => {
 function showMessages(msgs) {
     for (let i of msgs) {
         let child = document.createElement("div");
-        child.innerHTML =
-            "<p>" +
-            `<span>${i.name} - ${i.from}</span>` +
-            htmlEnc(`${i.text}`) +
-            "</p>";
-        chats.append(child);
         child.classList.add("message");
-        if (id == i.name) {
+        child.innerHTML =
+            `<p>` +
+            `<span class='from'>${i.name} - ${i.from}</span>` +
+            `<span class='text' data-id=${i.uid}>${htmlEnc(i.text)}</span>` +
+            "</p>";
+        let opts = document.createElement("div");
+        opts.classList.add("opts");
+        opts.innerHTML = `<button class='opt_btn' onclick='reply(this,"${i.uid}")'>Reply</button>`;
+        if (id == i.from) {
             child.classList.add("me");
+            opts.innerHTML += `
+            <button class='opt_btn' onclick='edit(this,"${i.uid}")'>Edt</button>
+            <button class='opt_btn' onclick='del_msg("${i.uid}")'>Del</button>
+            `;
         }
+        child.appendChild(opts);
+        chats.append(child);
     }
-    let froms = msgs.map((msg) => msg.name).join(', ');
+    let froms = msgs.map((msg) => msg.name).join(", ");
     notify("New Messages", `from ${froms.substring(0, 15)}...`);
     toBottom();
 }
@@ -143,3 +159,30 @@ window.addEventListener("pywebviewready", function () {
     eel = pywebview.api;
     init();
 });
+
+function edit(elem, uid) {
+    let xp = elem.parentElement.parentElement.getElementsByClassName("text")[0];
+    xp.setAttribute("contentEditable", true);
+    xp.setAttribute("tabindex", "0");
+    xp.focus();
+    xp.addEventListener("keypress", (e) => {
+        if (e.key == "Enter") {
+            e.preventDefault();
+            e.target.setAttribute("contentEditable", false);
+            e.target.blur();
+            socket.emit(
+                "edit",
+                { uid: uid, text: e.target.innerHTML },
+                (e) => {}
+            );
+        }
+    });
+    xp.addEventListener("focusout", (e) => {
+        e.target.setAttribute("contentEditable", false);
+        socket.emit("edit", { uid: uid, text: e.target.innerHTML }, (e) => {});
+    });
+}
+
+function del_msg(uid) {
+    socket.emit("delete", { uid: uid });
+}

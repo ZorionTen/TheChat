@@ -36,12 +36,11 @@ class Api:
         self.hidden=False
 
     def send_notify(self, text):
-        print(f'hidden {self.hidden}')
         if self.hidden:
             sys_tray.notify(text)
 
     def log(self, text):
-        print(f'[FROM PY_CLIENT] {text}')
+        print(f'[JS>PY] {text}')
 
     def get_server_ip(self):
         return config.get('server', '0.0.0.0')
@@ -77,7 +76,7 @@ def fire_open():
 
 api = Api()
 window = wv.create_window(
-    title='TheChat', url=f'{PATH}/login.html', transparent=True, js_api=api,
+    title='TheChat', transparent=True, background_color = '#202020',url=f'{PATH}/login.html', js_api=api,
     min_size=(1200, 800))
 api.window = window
 # Register events
@@ -88,5 +87,5 @@ if __name__ == '__main__':
     print(f'Serving files at {PATH}')
     sys_tray.click_callback = fire_open
     sys_tray.start()
-    wv.start(debug=False)
+    wv.start(debug=False,http_server=True)
     sys_tray.stop()

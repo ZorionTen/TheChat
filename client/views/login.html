@@ -10,7 +10,9 @@
 
 <body>
     <div id="window">
-        <div id="title_bar">LOGIN</div>
+        <div id="title_bar"><span>LOGIN</span>
+            <button id="close_btn" onclick="quit()"><img src="assets/close.png"/></button>
+        </div>
         <div id="content">
             <label id="username">Username:</label>
             <input type="text" />
@@ -20,7 +22,7 @@
     </div>
     <script>
         let eel;
-
+        // setInterval(()=>location.href='login.html',2000);
         let init = () => {
             eel.get_hs().then((data) => {
                 if (data && data != "cedcoss" && data != "ubuntu") {

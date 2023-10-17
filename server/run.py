@@ -1,26 +1,39 @@
 import eventlet
 import socketio
 import json
+import time
+from datetime import datetime ,timedelta
+from tinydb import TinyDB, Query, where
+from tinydb.storages import JSONStorage
+from tinydb.middlewares import CachingMiddleware
 
-IPS = json.load(open('IPS.json'))
-IP = '172.16.50.122'
+IP = '0.0.0.0'
 MAX_MESSAGES = 50
 
-WEB_PATH = '/home/cedcoss/Programs/TheChat/client/views'
+## TODO: make web app
+# WEB_PATH = '/home/cedcoss/Programs/TheChat/client/views'
 
-messages = []
-try:
-    messages = json.load(open("his.json")) 
-except FileNotFoundError:
-    pass
+DB = TinyDB('./database/messages.json',storage=CachingMiddleware(JSONStorage))
+query = Query()
+
+messages = DB.table('messages') 
 ips = {}
 sio = socketio.Server(cors_allowed_origins="*")
-app = socketio.WSGIApp(sio, static_files={
-    '/': {'content_type': 'text/html', 'filename': f'{WEB_PATH}/index.html'},
-    '/assets/script.js': {'content_type': 'text/javascript', 'filename': f'{WEB_PATH}/assets/script.js'},
-    '/assets/style.css': {'content_type': 'text/css', 'filename': f'{WEB_PATH}/assets/style.css'},
-})
+app = socketio.WSGIApp(sio)
 
+def delete_old_messages():
+    cutoff_time = datetime.now() - timedelta(days=1)
+
+    # Find documents older than a day
+    old_entries = messages.search((query.sat < cutoff_time.timestamp()))
+
+    # Delete the old entries
+    for entry in old_entries:
+        messages.remove(query.sat == entry['sat'])
+
+###
+# SERVER
+###
 @sio.event
 def connect(sid, environ):
     ips[sid]=environ['REMOTE_ADDR']
@@ -30,22 +43,32 @@ def connect(sid, environ):
 
 @sio.event
 def message(sid, data):
-    mes={**data,'from':ips[sid],'sid':sid}
-    mes['s_name'] = IPS.get(mes['from'],'None')
-    messages.append(mes)
-    mes['m_id'] = messages.index(mes)
-    if len(messages)> MAX_MESSAGES:
-        messages.pop(0)
-    json.dump(messages,fp=open('his.json','w'),indent=4)
+    mes={**data,'from':ips[sid],'sid':sid,'sat':time.time(),'uid':f'{sid}_{int(time.time())}'}
+    messages.insert(mes)
     sio.emit('message',[mes])
 
 
 @sio.event
 def command(sid, data):
     if data =='history':
-        return messages
+        delete_old_messages()
+        results = messages.search(query.sat.exists())
+        results.sort(key=lambda x: x['sat'],reverse=False)
+        return results[:50]
     if data=='members':
         return ips
+
+
+@sio.event
+def edit(sid,data):
+    sio.emit('edited',{'uid':data['uid'],"text":data['text']})
+    return {'response':messages.update({'text':data['text']},Query().uid==data['uid'])}
+
+
+@sio.event
+def delete(sid, data):
+    sio.emit('deleted', {'uid': data['uid']})
+    return {'response': messages.remove(where('uid')==data['uid'])}
 
 @sio.event
 def disconnect(sid):
@@ -54,4 +77,9 @@ def disconnect(sid):
     print('disconnect ', sid)
 
 if __name__ == '__main__':
-    server = eventlet.wsgi.server(eventlet.listen((IP, 51998)),app)
+    try:
+        server = eventlet.wsgi.server(eventlet.listen((IP, 51998)),app)
+    except Exception as e:
+        print(e)
+    finally:
+        DB.close()

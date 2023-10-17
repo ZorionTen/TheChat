@@ -16,8 +16,8 @@ body {
     font-family: 'Courier New', Courier, monospace;
     margin: 0px;
     padding: 0px;
-    /* background-color: rgba(00, 127, 255, 0.5); */
     background-image: url('/assets/xp.jpg');
+    /* background: transparent; */
     background-size: cover;
     display: flex;
     justify-content: center;
@@ -35,6 +35,7 @@ div#window {
 }
 
 div#title_bar {
+    position: relative;
     box-sizing: border-box;
     background-color: var(--titlebar);
     border: 3px outset var(--titlebar_dark);
@@ -82,4 +83,22 @@ div#content {
 
 #quit {
     left: 20px;
+}
+
+#close_btn img {
+    height: 100%;
+    margin: none;
+    padding: none;
+}
+
+#close_btn{
+    position: absolute;
+    height: 90%;
+    margin: none;
+    padding: none;
+    background: transparent;
+    border:none;
+    outline:none;
+    right:2px;
+    top:2px;
 }
