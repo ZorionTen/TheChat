@@ -9,12 +9,25 @@
     --accent-dark-color: darkcyan;
     --accent-darker-color: rgb(0, 85, 85);
     --bg-color: #0f2f7f;
+    --bg-alpha: #0f2f7f;
     --bg-darker-color: #002f4f;
     --void-color: #070f1f;
+
+    --text-alpha: rgba(255, 255, 255, 0.3);
+    --text-dark-alpha: rgba(0, 0, 0, 0.3);
+    --accent-alpha: rgba(0, 255, 255, 0.3);
+    --accent-dark-alpha: rgba(0, 139, 139, 0.3);
+    --accent-darker-alpha: rgba(0, 85, 85, 0.3);
+    --bg-alpha: rgba(15, 47, 127, 0.3);
+    --bg-darker-alpha: rgba(0, 47, 79, 0.3);
+    --void-alpha: rgba(7, 15, 31, 0.3);
+
 }
 
 body {
     background-color: var(--void-color);
+    background-image: url('/assets/bg.png');
+    background-blend-mode: color-burn;
     color: var(--text-color);
     font-family: "Courier New", Courier, monospace;
     font-size: 18px;
@@ -31,7 +44,8 @@ div {
     box-sizing: border-box;
 }
 
-input {
+input,
+textarea {
     color: var(--text-color);
 }
 
@@ -56,9 +70,11 @@ input::placeholder {
 .main div {
     padding: 10px;
 }
+
 .sidebar {
     width: 240px;
 }
+
 #mems {
     width: fit-content;
     min-width: 100%;
@@ -136,30 +152,17 @@ input::placeholder {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-color);
 }
-#chats p {
-    width: fit-content;
-    max-width: 80%;
-    max-height: 400px;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    background-color: var(--bg-darker-color);
-    padding: 20px;
-    scrollbar-width: 0px;
-    padding-top: 0px;
-    display: inline-block;
-    border-radius: 10px;
-    margin: 0px;
-}
 
 #chats p::-webkit-scrollbar {
     display: none;
 }
+
 #chats p span {
     display: block;
-    background-color: inherit;
     width: auto;
     padding-top: 10px;
 }
+
 .from {
     font-size: 12px;
     font-weight: bold;
@@ -167,69 +170,117 @@ input::placeholder {
     position: sticky;
     top: 0px;
 }
+
 .text {
     font-size: 16px;
+    height: fill;
+    user-select: text;
+    white-space: pre;
+    overflow-y: scroll;
 }
 
-.me p {
-    background-color: var(--bg-color);
-}
 .message {
     margin: 2px;
     display: flex;
 }
+
+.message p {
+    background-color: var(--bg-darker-alpha);
+    width: fit-content;
+    max-width: 80%;
+    max-height: 400px;
+    padding: 20px;
+    scrollbar-width: 0px;
+    padding-top: 0px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    margin: 0px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 10px 5px 0px black;
+}
+
 .me {
     flex-direction: row-reverse;
 }
+
+.me p {
+    background-color: var(--bg-alpha);
+}
+
 .message .opts {
     opacity: 0;
     margin: none;
     padding: none;
     transition: 300ms;
-    flex:right;
+    flex: right;
     display: inline-block;
 }
-.message:hover .opts {
+
+.message p:hover+.opts,
+.opts:hover {
     opacity: 1;
-    /* display: block; */
 }
+
 .opt_btn {
     margin: 0px;
     height: 32px;
     width: fit-content;
     color: var(--text-color);
     border: none;
-    padding: 10px;
+    padding: 0px;
     vertical-align: bottom;
-    background-color: var(--accent-darker-color);
-    border-radius:10px;
+    background-color: var(--bg-dark-color);
+    border-radius: 10px;
     transition: 300ms;
 }
 
 .opt_btn:hover {
-    background-color: var(--accent-color);
-    color: var(--void-color);
+    color: var(--accent-color);
     font-weight: bolder;
 }
+
 #input {
     display: flex;
-    background-color: var(--accent-dark-color);
+    background-color: transparent;
     border-radius: 0px;
-    padding: inherit 20px inherit 20px;
+    padding: 5px 20px 5px 20px;
     margin: 0px;
     width: 100%;
     overflow: hidden;
+    height: 32px;
+    box-sizing: border-box;
+    transition: 300ms;
 }
 
-#input input {
+#input:focus-within,
+#input:hover {
+    height: 64px;
+}
+
+#input:focus-within textarea,
+#input:hover textarea {
+    overflow-y: scroll;
+}
+
+#input textarea {
     flex: 1;
-    background-color: inherit;
+    background-color: var(--accent-dark-alpha);
     outline: none;
     border: none;
+    margin: none;
+    padding: 10px;
     color: var(--text-color);
-    height: 30px;
-    font-size: 18px;
+    height: auto;
+    font-size: 16px;
     font-family: inherit;
+    resize: none;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: 300ms;
+    /* opacity: 0.4; */
+    backdrop-filter: blur(5px);
 }
 
 #bottom_buttons {
@@ -258,8 +309,7 @@ button.side_button {
     background: transparent;
     border: none;
     outline: none;
-    filter: invert() sepia(100%) saturate(300%) brightness(70%)
-        hue-rotate(180deg);
+    filter: invert() sepia(100%) saturate(300%) brightness(70%) hue-rotate(100deg);
     transition: 300ms;
 }
 

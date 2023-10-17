@@ -78,18 +78,16 @@ def delete(sid, data):
     return {'response': messages.remove(where('uid')==data['uid'])}
 
 @sio.event
+def get_message(sid, data):
+    return messages.search({'uid':data['uid']})
+
+@sio.event
 def disconnect(sid):
     del ips[sid]
     sio.emit('command',{'data':{'members':list(ips.values())}})
     print('disconnect ', sid)
 
 if __name__ == '__main__':
-    try:
-        server = eventlet.wsgi.server(eventlet.listen((IP, 51998)),app)
-    except Exception as e:
-        print(e)
-    finally:
-        DB.close()
     try:
         server = eventlet.wsgi.server(eventlet.listen((IP, 51998)),app)
     except Exception as e:

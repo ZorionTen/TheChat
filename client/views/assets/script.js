@@ -88,10 +88,9 @@ let init = () => {
 
     let username = sessionStorage.getItem("username");
     document.querySelector("#inp_name").innerHTML = username;
-    document.querySelector("#input input").addEventListener("keypress", (e) => {
-        if (e.key == "Enter" && e.shiftKey) {
-            e.target.value += "\\n";
-        } else if (e.key == "Enter") {
+    document.querySelector("#input textarea").addEventListener("keypress", (e) => {
+        if (e.key == "Enter" && !e.shiftKey) {
+            e.preventDefault();
             let text = e.target.value;
             e.target.value = "";
             socket.emit("message", {
@@ -113,7 +112,7 @@ function showMessages(msgs) {
             "</p>";
         let opts = document.createElement("div");
         opts.classList.add("opts");
-        opts.innerHTML = `<button class='opt_btn' onclick='reply(this,"${i.uid}")'>Reply</button>`;
+        opts.innerHTML = `<button class='opt_btn' onclick='reply("${i.uid}")'>Reply</button>`;
         if (id == i.from) {
             child.classList.add("me");
             opts.innerHTML += `
