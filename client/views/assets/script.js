@@ -80,7 +80,7 @@ let init = () => {
                     .parentElement.remove();
             });
 
-            document.querySelector('#input').addEventListener('transitionend',(e)=>{
+            document.querySelector('#input').addEventListener('transitionend', (e) => {
                 toBottom();
             })
 
@@ -106,7 +106,7 @@ let init = () => {
                 let reply_to = "";
                 try {
                     reply_to = document.querySelector("#quote .uid").innerHTML;
-                } catch {}
+                } catch { }
                 if (text.length < 1) {
                     return true;
                 }
@@ -128,18 +128,18 @@ function showMessages(msgs) {
         let p = document.createElement('p');
         p.setAttribute("data-id", i.uid);
         p.innerHTML = `<span class='from'>${i.name} - ${i.from}</span>`;
-        if (i.hasOwnProperty("reply")) {
-            p.innerHTML += `<span class='reply'>${i.reply_text}</span>`;
+        if (i.hasOwnProperty("reply") && i.hasOwnProperty("reply_text")) {
+            p.innerHTML += `<span class='reply'>${i.reply_text} <i class="ri-reply-line"></i></span>`;
         }
         p.innerHTML += `<span class='text'>${htmlEnc(i.text)}</span>`;
         let opts = document.createElement("div");
         opts.classList.add("opts");
-        opts.innerHTML = `<button class='opt_btn' onclick='reply("${i.uid}")'>Reply</button>`;
+        opts.innerHTML = `<button class='opt_btn' onclick='reply("${i.uid}")'><i class="ri-reply-fill"></i></button>`;
         if (id == i.from) {
             child.classList.add("me");
             opts.innerHTML += `
-            <button class='opt_btn' onclick='edit(this,"${i.uid}")'>Edt</button>
-            <button class='opt_btn' onclick='del_msg("${i.uid}")'>Del</button>
+            <button class='opt_btn' onclick='edit(this,"${i.uid}")'><i class="ri-edit-line"></i></button>
+            <button class='opt_btn' onclick='del_msg("${i.uid}")'><i class="ri-close-circle-line"></i></i></button>
             `;
         }
         p.addEventListener("click", () => {
@@ -198,14 +198,14 @@ function edit(elem, uid) {
             socket.emit(
                 "edit",
                 { uid: uid, text: e.target.innerHTML },
-                (e) => {}
+                (e) => { }
             );
         }
     });
     xp.addEventListener("focusout", (e) => {
         e.target.setAttribute("contentEditable", false);
         e.target.setAttribute("tabindex", "None");
-        socket.emit("edit", { uid: uid, text: e.target.innerHTML }, (e) => {});
+        socket.emit("edit", { uid: uid, text: e.target.innerHTML }, (e) => { });
     });
 }
 
@@ -234,7 +234,6 @@ function reply(uid) {
     document.querySelector("#quote").innerHTML = str;
     document.querySelector("#quote").style.display = "block";
     document.querySelector("#msg_input").focus();
-    eel.log(elem.innerHTML);
 }
 
 function clearQuote() {

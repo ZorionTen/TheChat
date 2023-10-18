@@ -102,5 +102,5 @@ if __name__ == '__main__':
     print(f'Serving files at {PATH}')
     sys_tray.click_callback = fire_open
     sys_tray.start()
-    wv.start(debug=True,http_server=True)
+    wv.start(debug='--dev' in sys.argv,http_server=True)
     sys_tray.stop()

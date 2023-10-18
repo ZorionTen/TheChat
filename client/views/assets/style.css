@@ -220,7 +220,7 @@ input::placeholder {
     gap: 100px;
 }
 
-.message p:hover + .opts,
+.message p:hover+.opts,
 .opts:hover {
     opacity: 1;
 }
@@ -246,6 +246,7 @@ input::placeholder {
     background-color: var(--bg-dark-color);
     border-radius: 10px;
     transition: 300ms;
+    font-size: 16px;
 }
 
 .opt_btn:hover {
@@ -300,8 +301,8 @@ input::placeholder {
 #input:focus-within #quote,
 #input:hover #quote {
     height: 32px;
-    overflow-y: scroll;
 }
+
 #bottom_buttons {
     width: 100%;
     height: 64px;
@@ -315,17 +316,10 @@ input::placeholder {
     padding: 0px 10px 0px 0px;
     box-sizing: border-box;
 }
-
-#bottom_buttons img {
-    height: 100%;
-    width: auto;
-    background: transparent;
-}
-
 #hidden_buttons {
-    height: 12px;
+    height: 15px;
     width: 100%;
-    padding: 5px;
+    padding: 0px 5px 0px 5px;
     background-color: var(--accent-dark-color);
     transition: 300ms;
     overflow: hidden;
@@ -333,6 +327,9 @@ input::placeholder {
     display: flex;
     justify-content: space-between;
     position: relative;
+    box-sizing: border-box;
+    margin:none;
+    font-size: 12px;
 }
 
 #hidden_buttons span {
@@ -347,6 +344,7 @@ input::placeholder {
 #hidden_buttons:hover {
     height: 64px;
     background-color: var(--accent-darker-color);
+    font-size: 24px;
 }
 
 #hidden_buttons:hover span {
@@ -355,24 +353,22 @@ input::placeholder {
 
 #hidden_buttons .side_button {
     filter: none;
-    color: var(--text-color);
-    font-size: 16px;
     width: fit-content;
+    font-size: inherit;
+    transition: font-size 0ms;
 }
 
 button.side_button {
-    height: 32px;
-    width: 32px;
     background: transparent;
     border: none;
     outline: none;
-    filter: invert() sepia(100%) saturate(300%) brightness(70%)
-        hue-rotate(100deg);
+    font-size: 24px;
+    color: var(--accent-color);
     transition: 300ms;
 }
 
 button.side_button:hover {
-    filter: invert();
+    color: var(--text-color);
 }
 
 #inp_name {
@@ -381,6 +377,7 @@ button.side_button:hover {
     text-align: center;
     font-weight: bolder;
 }
+
 #quote {
     height: 0px;
     min-width: 128px;
@@ -404,9 +401,9 @@ button.side_button:hover {
 
 #quote span {
     position: absolute;
-    top:2px;
-    right :10px;
-    font-size: 16px;    
+    top: 2px;
+    right: 10px;
+    font-size: 16px;
 }
 
 .hidden {
