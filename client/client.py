@@ -5,6 +5,7 @@ import json
 import watcher
 import socket
 import sys
+import requests
 
 try:
     BASE_PATH = sys._MEIPASS
@@ -68,6 +69,20 @@ class Api:
     def quit(self):
         self.kill_flag = True
         self.window.destroy()
+    
+    def update_client(self,url):
+        file_path = os.environ['HOME']+'/.TheChat/client'
+        if os.path.exists(file_path):
+            old_file_path = f"{file_path}.old"
+            os.rename(file_path, old_file_path)
+            print(f"Renamed {file_path} to {old_file_path}")
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(file_path, 'wb') as new_file:
+                new_file.write(response.content)
+            print(f"Downloaded and saved new file to {file_path}")
+        else:
+            print(f"Failed to download the file from {url}")
 
 
 def fire_open():
@@ -87,5 +102,5 @@ if __name__ == '__main__':
     print(f'Serving files at {PATH}')
     sys_tray.click_callback = fire_open
     sys_tray.start()
-    wv.start(debug=False,http_server=True)
+    wv.start(debug=True,http_server=True)
     sys_tray.stop()

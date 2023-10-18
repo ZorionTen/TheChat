@@ -75,8 +75,17 @@ let init = () => {
             });
 
             socket.on("deleted", (data) => {
-                document.querySelector(`span[data-id="${data.uid}"]`).parentElement.parentElement.remove();
+                document
+                    .querySelector(`p[data-id="${data.uid}"]`)
+                    .parentElement.remove();
             });
+
+            document.querySelector('#input').addEventListener('transitionend',(e)=>{
+                toBottom();
+            })
+
+            checkUpdate();
+            setInterval(checkUpdate, 12 * 3600000);
         });
     } catch ({ name, msg }) {
         if (name == "ReferenceError") {
@@ -88,28 +97,41 @@ let init = () => {
 
     let username = sessionStorage.getItem("username");
     document.querySelector("#inp_name").innerHTML = username;
-    document.querySelector("#input textarea").addEventListener("keypress", (e) => {
-        if (e.key == "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            let text = e.target.value;
-            e.target.value = "";
-            socket.emit("message", {
-                text: text,
-                name: username,
-            });
-        }
-    });
+    document
+        .querySelector("#input textarea")
+        .addEventListener("keypress", (e) => {
+            if (e.key == "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                let text = e.target.value;
+                let reply_to = "";
+                try {
+                    reply_to = document.querySelector("#quote .uid").innerHTML;
+                } catch {}
+                if (text.length < 1) {
+                    return true;
+                }
+                e.target.value = "";
+                clearQuote();
+                socket.emit("message", {
+                    text: text,
+                    name: username,
+                    reply: reply_to,
+                });
+            }
+        });
 }; // Close onload
 
 function showMessages(msgs) {
     for (let i of msgs) {
         let child = document.createElement("div");
         child.classList.add("message");
-        child.innerHTML =
-            `<p>` +
-            `<span class='from'>${i.name} - ${i.from}</span>` +
-            `<span class='text' data-id=${i.uid}>${htmlEnc(i.text)}</span>` +
-            "</p>";
+        let p = document.createElement('p');
+        p.setAttribute("data-id", i.uid);
+        p.innerHTML = `<span class='from'>${i.name} - ${i.from}</span>`;
+        if (i.hasOwnProperty("reply")) {
+            p.innerHTML += `<span class='reply'>${i.reply_text}</span>`;
+        }
+        p.innerHTML += `<span class='text'>${htmlEnc(i.text)}</span>`;
         let opts = document.createElement("div");
         opts.classList.add("opts");
         opts.innerHTML = `<button class='opt_btn' onclick='reply("${i.uid}")'>Reply</button>`;
@@ -120,6 +142,10 @@ function showMessages(msgs) {
             <button class='opt_btn' onclick='del_msg("${i.uid}")'>Del</button>
             `;
         }
+        p.addEventListener("click", () => {
+            document.querySelector(`p[data-id='${i.reply}']`).scrollIntoView();
+        });
+        child.appendChild(p);
         child.appendChild(opts);
         chats.append(child);
     }
@@ -165,7 +191,7 @@ function edit(elem, uid) {
     xp.setAttribute("tabindex", "0");
     xp.focus();
     xp.addEventListener("keypress", (e) => {
-        if (e.key == "Enter") {
+        if (e.key == "Enter" && !e.shiftKey) {
             e.preventDefault();
             e.target.setAttribute("contentEditable", false);
             e.target.blur();
@@ -178,10 +204,40 @@ function edit(elem, uid) {
     });
     xp.addEventListener("focusout", (e) => {
         e.target.setAttribute("contentEditable", false);
+        e.target.setAttribute("tabindex", "None");
         socket.emit("edit", { uid: uid, text: e.target.innerHTML }, (e) => {});
     });
 }
 
 function del_msg(uid) {
     socket.emit("delete", { uid: uid });
+}
+
+function checkUpdate() {
+    socket.emit("update", {}, (data) => {
+        if (data.update) {
+            eel.log("Updating...");
+            eel.update_client(data.url);
+        } else {
+            eel.log("no update");
+        }
+    });
+}
+
+function reply(uid) {
+    let elem = document.querySelector(`p[data-id='${uid}']`);
+    let from = elem.getElementsByClassName("from")[0].innerHTML;
+    let text = elem.getElementsByClassName("text")[0].innerHTML;
+    let str = `<pre>${from}: ${text}</pre>`;
+    str = '<span onclick="clearQuote()">x</span>' + str;
+    str += `<span class='hidden uid'>${uid}</span>`;
+    document.querySelector("#quote").innerHTML = str;
+    document.querySelector("#quote").style.display = "block";
+    document.querySelector("#msg_input").focus();
+    eel.log(elem.innerHTML);
+}
+
+function clearQuote() {
+    document.querySelector("#quote").innerHTML = "";
+    document.querySelector("#quote").style.display = "none";
 }

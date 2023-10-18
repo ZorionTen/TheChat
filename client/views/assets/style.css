@@ -21,12 +21,11 @@
     --bg-alpha: rgba(15, 47, 127, 0.3);
     --bg-darker-alpha: rgba(0, 47, 79, 0.3);
     --void-alpha: rgba(7, 15, 31, 0.3);
-
 }
 
 body {
     background-color: var(--void-color);
-    background-image: url('/assets/bg.png');
+    background-image: url("/assets/bg.png");
     background-blend-mode: color-burn;
     color: var(--text-color);
     font-family: "Courier New", Courier, monospace;
@@ -73,6 +72,7 @@ input::placeholder {
 
 .sidebar {
     width: 240px;
+    background-color: var(--bg-darker-color);
 }
 
 #mems {
@@ -197,7 +197,7 @@ input::placeholder {
     border-radius: 10px;
     margin: 0px;
     overflow: hidden;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(2px);
     box-shadow: 0px 10px 5px 0px black;
 }
 
@@ -214,18 +214,30 @@ input::placeholder {
     margin: none;
     padding: none;
     transition: 300ms;
-    flex: right;
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 100px;
 }
 
-.message p:hover+.opts,
+.message p:hover + .opts,
 .opts:hover {
     opacity: 1;
 }
 
+.message .reply {
+    background-color: var(--text-dark-alpha);
+    padding: 10px;
+    overflow: hidden;
+    margin: 10px 0px 10px 0px;
+    border-radius: inherit;
+    transition: 300ms;
+    width: fit-content;
+    white-space: pre;
+}
+
 .opt_btn {
     margin: 0px;
-    height: 32px;
     width: fit-content;
     color: var(--text-color);
     border: none;
@@ -245,23 +257,14 @@ input::placeholder {
     display: flex;
     background-color: transparent;
     border-radius: 0px;
-    padding: 5px 20px 5px 20px;
+    padding: 5px 20px 0px 20px;
     margin: 0px;
     width: 100%;
     overflow: hidden;
-    height: 32px;
+    height: 24px;
     box-sizing: border-box;
     transition: 300ms;
-}
-
-#input:focus-within,
-#input:hover {
-    height: 64px;
-}
-
-#input:focus-within textarea,
-#input:hover textarea {
-    overflow-y: scroll;
+    flex-direction: column;
 }
 
 #input textarea {
@@ -270,19 +273,35 @@ input::placeholder {
     outline: none;
     border: none;
     margin: none;
-    padding: 10px;
+    padding: 10px 10px 10px 20px;
     color: var(--text-color);
     height: auto;
     font-size: 16px;
     font-family: inherit;
     resize: none;
-    border-radius: 16px;
+    border-radius: 18px 18px 00px 0px;
     overflow: hidden;
     transition: 300ms;
-    /* opacity: 0.4; */
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(2px);
 }
 
+#input:focus-within,
+#input:hover {
+    height: 96px;
+    padding: 0%;
+}
+
+#input:focus-within textarea,
+#input:hover textarea {
+    overflow-y: scroll;
+    border-radius: 0px;
+}
+
+#input:focus-within #quote,
+#input:hover #quote {
+    height: 32px;
+    overflow-y: scroll;
+}
 #bottom_buttons {
     width: 100%;
     height: 64px;
@@ -303,13 +322,52 @@ input::placeholder {
     background: transparent;
 }
 
+#hidden_buttons {
+    height: 12px;
+    width: 100%;
+    padding: 5px;
+    background-color: var(--accent-dark-color);
+    transition: 300ms;
+    overflow: hidden;
+    border-radius: 10px 10px 0px 0px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+#hidden_buttons span {
+    position: absolute;
+    left: 50%;
+    top: 0px;
+    color: white;
+    translate: -50%;
+    transition: 300ms;
+}
+
+#hidden_buttons:hover {
+    height: 64px;
+    background-color: var(--accent-darker-color);
+}
+
+#hidden_buttons:hover span {
+    color: var(--accent-darker-color);
+}
+
+#hidden_buttons .side_button {
+    filter: none;
+    color: var(--text-color);
+    font-size: 16px;
+    width: fit-content;
+}
+
 button.side_button {
     height: 32px;
     width: 32px;
     background: transparent;
     border: none;
     outline: none;
-    filter: invert() sepia(100%) saturate(300%) brightness(70%) hue-rotate(100deg);
+    filter: invert() sepia(100%) saturate(300%) brightness(70%)
+        hue-rotate(100deg);
     transition: 300ms;
 }
 
@@ -322,4 +380,35 @@ button.side_button:hover {
     padding: 10px;
     text-align: center;
     font-weight: bolder;
+}
+#quote {
+    height: 0px;
+    min-width: 128px;
+    width: 100%;
+    padding: 0px;
+    background-color: var(--accent-darker-alpha);
+    backdrop-filter: blur(10px);
+    border-radius: 0px;
+    display: none;
+    overflow: hidden;
+    vertical-align: text-top;
+    position: relative;
+}
+
+#quote span,
+#quote pre {
+    font-size: 12px;
+    display: inline-block;
+    padding: 0px 5px 0px 5px;
+}
+
+#quote span {
+    position: absolute;
+    top:2px;
+    right :10px;
+    font-size: 16px;    
+}
+
+.hidden {
+    display: none !important;
 }

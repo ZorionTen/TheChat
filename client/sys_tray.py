@@ -6,7 +6,7 @@ import sys
 try:
     BASE_PATH = sys._MEIPASS
 except AttributeError:
-    BASE_PATH = '.'
+    BASE_PATH = os.path.dirname(__file__)
 
 image = Image.open(BASE_PATH+'/views/favicon.ico')
 

@@ -27,6 +27,21 @@
             </div>
             <p id="meme_heading">Online</p>
             <div id="mems"></div>
+            <div id="hidden_buttons">
+                <span>=</span>
+                <button
+                    class="side_button"
+                    onclick="window.location='index.html'"
+                >
+                    reload
+                </button>
+                <button
+                    class="side_button"
+                    onclick="checkUpdate()"
+                >
+                    update
+                </button>
+            </div>
             <div id="bottom_buttons">
                 <button class="side_button" onclick="toBottom()">
                     <img src="/assets/scroll_bottom.png" alt="scroll bottom" />
@@ -34,14 +49,14 @@
                 <button class="side_button" onclick="eel.quit()">
                     <img src="/assets/log_out.png" alt="logout" />
                 </button>
-                <button class="side_button" onclick="window.location='index.html'">
-                    reload
-                </button>
             </div>
         </div>
         <div class="container main">
             <div id="chats"></div>
-            <div id="input"><textarea id="msg_input"></textarea></div>
+            <div id="input">
+                <div id="quote"></div>
+                <textarea id="msg_input"></textarea>
+            </div>
         </div>
     </body>
 </html>
