@@ -30,7 +30,7 @@ def stop():
 
 def notify(text):
     os.system(
-        f'notify-send -i '{BASE_PATH+"/views/favicon.ico"}' "TheChat" "{text}"')
+        f'notify-send -i \'{BASE_PATH+"/views/favicon.ico"}\' "TheChat" "{text}"')
 
 
 icon = pystray.Icon("TC", image, "TheChat", menu=pystray.Menu(
