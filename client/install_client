@@ -1,0 +1,28 @@
+#! /bin/bash
+
+$DEST_NAME='ChatClient'
+mkdir $HOME/.TheChat
+cd $HOME/.TheChat
+PYTHON='python3'
+
+python_version=$(python3 -V 2>&1 | cut -d ' ' -f 2)
+if [ "$(echo "$python_version 6" | tr " " "\n" | sort -V | tail -n 1)" == "$python_version" ]; then
+  echo "Python is compatable"
+else
+  echo "Downloading python"
+  wget -o python3.11 https://github.com/niess/python-appimage/releases/download/python3.11/python3.11.1-cp311-cp311-manylinux_2_24_x86_64.AppImage
+  chmod +x python3.11
+  PYTHON="$(pwd)/python3.11"
+fi
+git clone --branch main https://github.com/ZorionTen/TheChat.git $DEST_NAME
+cd $DEST_NAME
+rm -r server
+cd client  
+echo "Creating venv"
+$PYTHON -m pip install virtualenv
+$PTYHON -m venv .env
+source .env/bin/activate
+echo 'Installing deps'
+pip install -r req.txt
+echo "Starting client"
+python client.py

@@ -30,18 +30,18 @@ def stop():
 
 def notify(text):
     os.system(
-        f'notify-send -i {BASE_PATH+"/views/favicon.ico"} "TheChat" "{text}"')
+        f'notify-send -i '{BASE_PATH+"/views/favicon.ico"}' "TheChat" "{text}"')
 
 
 icon = pystray.Icon("TC", image, "TheChat", menu=pystray.Menu(
-    pystray.MenuItem("??", click, default=True),
-    pystray.MenuItem("Restore", click),
+    pystray.MenuItem("Open", click,default=True),
     pystray.MenuItem("Quit", stop),
 ))
 
 
 if __name__ == '__main__':
     try:
-        start()
+        print(icon)
+        start(True)
     except KeyboardInterrupt:
         stop()

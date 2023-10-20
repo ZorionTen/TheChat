@@ -217,7 +217,7 @@ input::placeholder {
     display: flex;
     flex-direction: column;
     height: 100%;
-    gap: 100px;
+    gap: 5px;
 }
 
 .message p:hover+.opts,
