@@ -25,3 +25,5 @@ EOL
 
 # Step 3: Check the service status
 echo "Chat app autostart setup complete. To test, log out and back in."
+
+$OUTPUT_FILE
