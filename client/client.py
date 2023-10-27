@@ -103,4 +103,6 @@ if __name__ == '__main__':
     print(f'Starting server on port {PORT}')
     print(f'Serving files at {PATH}')
     sys_tray.ICON_PATH = PATH+'/favicon.ico'
+    sys_tray.click_callback = api.from_tray
+    sys_tray.start()
     wv.start(debug='--dev' in sys.argv, http_server=True)
