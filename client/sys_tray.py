@@ -13,7 +13,15 @@ def_icon = None
 noti_icon = None
 _icon = None
 click_callback = None
+loop = None
 
+def start_loop():
+    global loop
+    try:
+        loop = asyncio.get_event_loop()    
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+    loop.run_forever()
 
 def get_image():
     global def_icon
@@ -53,9 +61,7 @@ async def create_notify(text):
 
 
 def notify(text):
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(create_notify(text))
-    loop.close()
+    asyncio.run_coroutine_threadsafe(create_notify(text),loop)
     _icon.icon = get_dot_image(ICON_PATH)
     # os.system(f'notify-send -i {ICON_PATH} "TheChat - Alert" "{text}"')
 
@@ -65,7 +71,7 @@ def start():
         'TheChat',
         icon=get_image())
     _icon.run_detached()
-    # Thread(target=loop.run_forever).start()
+    Thread(target=start_loop).start()
 
 
 if __name__ == '__main__':
