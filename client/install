@@ -4,6 +4,7 @@
 URL="http://172.16.50.122:51998/download"
 OUTPUT_DIR="$HOME/.TheChat"
 OUTPUT_FILE="$OUTPUT_DIR/client"
+APPS='/usr/share/applications'
 
 mkdir -p "$OUTPUT_DIR"  # Create the directory if it doesn't exist
 wget -O "$OUTPUT_FILE" "$URL"
@@ -22,8 +23,8 @@ X-GNOME-Autostart-enabled=true
 Name=The Chat
 Comment=Your description here
 EOL
+echo "Adding to apps"
+sudo cp $DESKTOP_FILE $APPS
 
 # Step 3: Check the service status
-echo "Chat app autostart setup complete. To test, log out and back in."
-
-$OUTPUT_FILE
+echo "Chat app autostart setup complete"
