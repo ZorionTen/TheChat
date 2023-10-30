@@ -8,4 +8,5 @@ client/events.json
 client/build
 client/dist
 server/database/*
+events.json
 *.spec

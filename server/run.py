@@ -1,6 +1,6 @@
 import eventlet
 import socketio
-import json
+import sys
 import time
 from datetime import datetime, timedelta
 from tinydb import TinyDB, Query, where
@@ -11,8 +11,8 @@ IP = '0.0.0.0'
 IP = '0.0.0.0'
 MAX_MESSAGES = 50
 
-UPDATE = False
-UPDATE_URL = 'http://172.16.50.122/download'
+UPDATE = "--update" in sys.argv
+UPDATE_URL = 'http://172.16.50.122:51998/download'
 
 # TODO: make web app
 # WEB_PATH = '/home/cedcoss/Programs/TheChat/client/views'

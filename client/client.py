@@ -1,11 +1,13 @@
-import webview as wv
-import os
-import sys_tray
-import json
-import watcher
-import socket
-import sys
 import requests
+import sys
+import socket
+import watcher
+import json
+import sys_tray
+import os
+import webview as wv
+from webview.util import environ_append
+environ_append("QTWEBENGINE_CHROMIUM_FLAGS", "--no-sandbox", "--no-sandbox")
 
 try:
     BASE_PATH = sys._MEIPASS
@@ -34,7 +36,7 @@ class Api:
         if window:
             self.window = window
         self.kill_flag = False
-        self.hidden=False
+        self.hidden = False
 
     def send_notify(self, text):
         if self.hidden:
@@ -54,23 +56,22 @@ class Api:
         if self.kill_flag:
             return True
         if self.window:
-            self.window.hide()
-        watcher.start(self.from_tray)
+            self.window.minimize()
         self.hidden = True
         return False
 
     def from_tray(self):
-        if self.window:
-            self.window.show()
-        json.dump({}, open(watcher.FILE, 'w'))
         self.hidden = False
+        if self.window:
+            self.window.restore()
         return 200
 
     def quit(self):
+        os.system(f"kill -9 {os.getpid()}")
         self.kill_flag = True
         self.window.destroy()
-    
-    def update_client(self,url):
+
+    def update_client(self, url):
         file_path = os.environ['HOME']+'/.TheChat/client'
         if os.path.exists(file_path):
             old_file_path = f"{file_path}.old"
@@ -91,16 +92,17 @@ def fire_open():
 
 api = Api()
 window = wv.create_window(
-    title='TheChat', transparent=True, background_color = '#202020',url=f'{PATH}/login.html', js_api=api,
+    title='TheChat', transparent=True, background_color='#202020', url=f'{PATH}/login.html', js_api=api,
     min_size=(1600, 800))
 api.window = window
 # Register events
 window.events.closing += api.to_tray
+window.events.restored += api.from_tray
 
 if __name__ == '__main__':
     print(f'Starting server on port {PORT}')
     print(f'Serving files at {PATH}')
-    sys_tray.click_callback = fire_open
+    sys_tray.ICON_PATH = PATH+'/favicon.ico'
+    sys_tray.click_callback = api.from_tray
     sys_tray.start()
-    wv.start(debug='--dev' in sys.argv,http_server=True,gui='qt')
-    sys_tray.stop()
+    wv.start(debug='--dev' in sys.argv, http_server=True)

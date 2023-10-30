@@ -1,47 +1,78 @@
+import asyncio
+import desktop_notifier as dn
+import desktop_notifier.resources as dnr
 import os
-import pystray
-from PIL import Image
-import sys
+os.environ['PYSTRAY_BACKEND'] = 'xorg'
+from pystray import Icon as icon, Menu as menu, MenuItem as item
+from PIL import Image, ImageDraw
+from threading import Thread
 
-try:
-    BASE_PATH = sys._MEIPASS
-except AttributeError:
-    BASE_PATH = os.path.dirname(__file__)
-
-image = Image.open(BASE_PATH+'/views/favicon.ico')
-
+ICON_PATH = 'views/favicon.ico'
+notifier = dn.DesktopNotifier()
+def_icon = None
+noti_icon = None
+_icon = None
 click_callback = None
+loop = None
+
+def start_loop():
+    global loop
+    try:
+        loop = asyncio.get_event_loop()    
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+    loop.run_forever()
+
+def get_image():
+    global def_icon
+    if not def_icon:
+        def_icon = Image.open(ICON_PATH)
+    return def_icon
 
 
-def click(icon, item):
-    print('[TRAY CALLBACK]---')
-    print(click_callback() if click_callback else 'No callback registered')
-    print('[TRAY CALLBACK]---')
+def get_dot_image(path):
+    global noti_icon
+    if not noti_icon:
+        image = Image.open(path)
+        draw = ImageDraw.Draw(image)
+        dot_position = (50, 50)  # Change this to the desired position
+        dot_radius = 5  # Change this to the desired size
+        dot_color = (255, 0, 0)
+        draw.ellipse([dot_position[0] - dot_radius, dot_position[1] - dot_radius,
+                      dot_position[0] + dot_radius, dot_position[1] + dot_radius],
+                     fill=dot_color)
+        noti_icon = image
+    return noti_icon
 
-def start(block=False):
-    icon.run() if block else icon.run_detached()
+
+def call():
+    _icon.icon = get_image()
+    click_callback() if click_callback else print('No callback')
 
 
-def stop():
-    print('Killing tray')
-    os.system(f'kill -9 {os.getpid()}')
-    icon.stop()
+async def create_notify(text):
+    await notifier.send(
+        title="TheChat - New Message",
+        message=text,
+        on_clicked=lambda: call(),
+        on_dismissed=lambda: print("Notification dismissed"),
+        sound=True,
+    )
 
 
 def notify(text):
-    os.system(
-        f'notify-send -i \'{BASE_PATH+"/views/favicon.ico"}\' "TheChat" "{text}"')
+    asyncio.run_coroutine_threadsafe(create_notify(text),loop)
+    _icon.icon = get_dot_image(ICON_PATH)
+    # os.system(f'notify-send -i {ICON_PATH} "TheChat - Alert" "{text}"')
 
-
-icon = pystray.Icon("TC", image, "TheChat", menu=pystray.Menu(
-    pystray.MenuItem("Open", click,default=True),
-    pystray.MenuItem("Quit", stop),
-))
+def start():
+    global _icon
+    _icon = icon(
+        'TheChat',
+        icon=get_image())
+    _icon.run_detached()
+    Thread(target=start_loop).start()
 
 
 if __name__ == '__main__':
-    try:
-        print(icon)
-        start(True)
-    except KeyboardInterrupt:
-        stop()
+    notify('TEST')

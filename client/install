@@ -1,13 +1,29 @@
 #!/bin/bash
 
 # Step 1: Download 'client' from the specified URL and save it to ~/.TheChat
-URL="http://172.16.50.122:51998/download"
 OUTPUT_DIR="$HOME/.TheChat"
 OUTPUT_FILE="$OUTPUT_DIR/client"
+APPS='/usr/share/applications'
 
 mkdir -p "$OUTPUT_DIR"  # Create the directory if it doesn't exist
-wget -O "$OUTPUT_FILE" "$URL"
+# wget -O "$OUTPUT_FILE" "$URL"
+echo 'Downloading required files...'
+git clone -b main https://github.com/ZorionTen/TheChat.git src
+cd src/client
+echo "need to install python3.8 and dev"
+sudo apt install python3.8 python3.8-dev
+python3.8 -m venv .env
+source .env/bin/activate
+pip install --upgrade pip
+pip install -r req.txt
+pyinstaller --onefile ./client.py --add-data 'views:views'
+echo 'Installing...'
+cp dist/client $OUTPUT_FILE
+echo 'Running cleanup...'
+cd ../..
+rm -rf src
 chmod +x "$OUTPUT_FILE"
+
 
 # Step 2: Create a desktop entry file for autostart
 DESKTOP_FILE="$HOME/.config/autostart/thechat.desktop"
@@ -22,6 +38,8 @@ X-GNOME-Autostart-enabled=true
 Name=The Chat
 Comment=Your description here
 EOL
+echo "Adding to apps"
+sudo cp $DESKTOP_FILE $APPS
 
 # Step 3: Check the service status
-echo "Chat app autostart setup complete. To test, log out and back in."
+echo "Chat app autostart setup complete"
