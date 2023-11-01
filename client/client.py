@@ -17,7 +17,7 @@ try:
     config = json.load(open(BASE_PATH+'/config.json'))
 except FileNotFoundError:
     print('[ERROR] config.json not found, Loading defaults')
-    config = {'server': '172.16.50.122'}
+    config = {'server': 'http://172.16.50.122:51998'}
 
 print(f'kill -9 {os.getpid()}')
 
