@@ -2,38 +2,50 @@
 # Step 1: Download 'client' from the specified URL and save it to ~/.TheChat
 OUTPUT_DIR="$HOME/.TheChat"
 OUTPUT_FILE="$OUTPUT_DIR/client"
-APPS='/usr/share/applications'
-rm -r $OUTPUT_DIR
+APPS="$HOME/.local/share/applications"
+PYTHON=python3.8
+
+rm -rf $OUTPUT_DIR
 mkdir -p "$OUTPUT_DIR"
 cd "$OUTPUT_DIR"
 echo 'Downloading required files...'
 git clone -b main https://github.com/ZorionTen/TheChat.git src
 cd src/client
 echo "need to install python3.8 and dev"
-sudo apt install python3.8 python3.8-dev python3-venv
-python3.8 -m venv .env
+sudo apt install -y $PYTHON $PYTHON-dev python3-venv git
+if command -v $PYTHON &>/dev/null; then
+   echo "Installed $PYTHON"
+else
+    echo "Python 3.8 is not installed. Using default"
+    PYTHON=python3
+fi
+$PYTHON -m venv .env
 source .env/bin/activate
 pip install --upgrade pip
 pip install -r req.txt
 # pyinstaller --onefile ./client.py --add-data 'views:views'
 echo 'Installing...'
 cat <<EOL > "$OUTPUT_FILE"
-cd $OUTPUT_DIR/src/client
-source .env/bin/activate
-python client.py
+SRC="$OUTPUT_DIR"
+cd "\$SRC/client"
+source .env/bin/activate>>"\$SRC/log"
+python client.py>>"\$SRC/log"
 EOL
 chmod +x "$OUTPUT_FILE"
+ln -s "$OUTPUT_FILE" "$HOME/.local/bin/thechat"
 # Step 2: Create a desktop entry file for autostart
 DESKTOP_FILE="$HOME/.config/autostart/thechat.desktop"
 cat <<EOL > "$DESKTOP_FILE"
 [Desktop Entry]
 Type=Application
-Exec=$OUTPUT_FILE
+Icon=/home/zaid-1942/.TheChat/src/client/views/favicon.ico
+Exec=thechat
+Terminal=true
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
 Name=The Chat
-Comment=Your description here
+Comment=A simple chat app
 EOL
 echo "Adding to apps"
 sudo cp $DESKTOP_FILE $APPS

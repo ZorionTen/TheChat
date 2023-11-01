@@ -183,14 +183,19 @@ input::placeholder {
 .message {
     margin: 2px;
     display: flex;
-    /* max-width: 500px; */
+    position: relative;
     overflow: hidden;
+}
+.reply_p i {
+    position: absolute;
+    right:10px;
+    top:25%
 }
 
 .message p {
     background-color: var(--bg-darker-alpha);
     width: fit-content;
-    max-width: 800px;
+    max-width: 60vw;
     max-height: 400px;
     padding: 20px;
     scrollbar-width: 0px;
@@ -231,12 +236,14 @@ input::placeholder {
 .message .reply {
     background-color: var(--text-dark-alpha);
     padding: 10px;
-    overflow: hidden;
     margin: 10px 0px 10px 0px;
     border-radius: inherit;
     transition: 300ms;
     width: fit-content;
     white-space: pre;
+    max-width: 95%;
+    max-height: 50px;
+    overflow: hidden;
 }
 
 .opt_btn {
@@ -249,7 +256,7 @@ input::placeholder {
     background-color: var(--bg-dark-color);
     border-radius: 10px;
     transition: 300ms;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .opt_btn:hover {
@@ -273,7 +280,7 @@ input::placeholder {
 
 #input textarea {
     flex: 1;
-    background-color: var(--accent-dark-alpha);
+    background-color: var(--text-alpha);
     outline: none;
     border: none;
     margin: none;
@@ -292,13 +299,15 @@ input::placeholder {
 #input:focus-within,
 #input:hover {
     height: 96px;
-    padding: 0%;
+    /* padding: 0%; */
 }
 
 #input:focus-within textarea,
 #input:hover textarea {
     overflow-y: scroll;
-    border-radius: 0px;
+    /* border-radius: 0px; */
+    /* background-color: var(--bg-alpha); */
+
 }
 
 #input:focus-within #quote,
@@ -319,6 +328,7 @@ input::placeholder {
     padding: 0px 10px 0px 0px;
     box-sizing: border-box;
 }
+
 #hidden_buttons {
     height: 15px;
     width: 100%;
@@ -331,7 +341,7 @@ input::placeholder {
     justify-content: space-between;
     position: relative;
     box-sizing: border-box;
-    margin:none;
+    margin: none;
     font-size: 12px;
 }
 
