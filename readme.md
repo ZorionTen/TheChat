@@ -1,7 +1,7 @@
 # Installation
 
 ```bash
-wget https://raw.githubusercontent.com/ZorionTen/TheChat/webview/client/install
+wget https://raw.githubusercontent.com/ZorionTen/TheChat/main/client/install
 chmod +x install
 ./install
 ```
