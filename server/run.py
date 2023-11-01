@@ -8,7 +8,6 @@ from tinydb.storages import JSONStorage
 from tinydb.middlewares import CachingMiddleware
 
 IP = '0.0.0.0'
-IP = '0.0.0.0'
 MAX_MESSAGES = 50
 
 UPDATE = "--update" in sys.argv
