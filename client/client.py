@@ -1,7 +1,6 @@
 import requests
 import sys
 import socket
-import watcher
 import json
 import sys_tray
 import os
@@ -38,8 +37,11 @@ class Api:
         self.kill_flag = False
         self.hidden = False
 
-    def send_notify(self, text):
-        if self.hidden:
+    def visible(self,value):
+        self.hidden=not value
+
+    def send_notify(self, text,force= False):
+        if self.hidden or force:
             sys_tray.notify(text)
 
     def log(self, text):
@@ -72,22 +74,9 @@ class Api:
         self.window.destroy()
 
     def update_client(self, url):
-        file_path = os.environ['HOME']+'/.TheChat/client'
-        if os.path.exists(file_path):
-            old_file_path = f"{file_path}.old"
-            os.rename(file_path, old_file_path)
-            print(f"Renamed {file_path} to {old_file_path}")
-        response = requests.get(url)
-        if response.status_code == 200:
-            with open(file_path, 'wb') as new_file:
-                new_file.write(response.content)
-            print(f"Downloaded and saved new file to {file_path}")
-        else:
-            print(f"Failed to download the file from {url}")
-
-
-def fire_open():
-    json.dump({"show": 1}, open(watcher.FILE, "w"))
+        file_path = os.environ['HOME']+'/.TheChat/src'
+        os.chdir(file_path)
+        os.system('git pull origin main')
 
 
 api = Api()
@@ -98,6 +87,7 @@ api.window = window
 # Register events
 window.events.closing += api.to_tray
 window.events.restored += api.from_tray
+window.events.minimized += lambda: api.visible(False)
 
 if __name__ == '__main__':
     print(f'Starting server on port {PORT}')

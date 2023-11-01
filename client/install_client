@@ -1,3 +1,0 @@
-wget https://raw.githubusercontent.com/ZorionTen/TheChat/webview/client/install
-chmod +x install
-./install

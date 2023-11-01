@@ -39,7 +39,7 @@ def delete_old_messages():
 
 @sio.event
 def connect(sid, environ):
-    ips[sid] = environ['REMOTE_ADDR']
+    ips[sid] = {"ip":environ['REMOTE_ADDR']}
     print('connect ', sid)
     sio.emit('command', {'data': {'ip': environ['REMOTE_ADDR']}}, to=sid)
     sio.emit('command', {'data': {'members': list(ips.values())}})
@@ -47,10 +47,9 @@ def connect(sid, environ):
 
 @sio.event
 def message(sid, data):
-    mes = {**data, 'from': ips[sid], 'sid': sid,
+    mes = {**data, 'from': ips[sid].get('ip','no-ip'), 'sid': sid,
            'sat': time.time(), 'uid': f'{sid}_{int(time.time())}'}
     if len(data.get('reply',""))>0:
-        print(data)
         msg = get_message(sid,{'uid':data['reply']})[0]
         reply_text = f"{msg['name']}:{msg['text']}"
         mes = {**mes,'reply_text':reply_text}
@@ -67,6 +66,11 @@ def command(sid, data):
         return results[:50]
     if data == 'members':
         return ips
+
+@sio.event
+def user_info(sid,data):
+    ips[sid]['name']=data.get('name','no-name') 
+    sio.emit('command', {'data': {'members': list(ips.values())}})
 
 
 @sio.event

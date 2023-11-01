@@ -3,9 +3,12 @@ let id;
 let noti;
 let isHidden = true;
 let socket;
-
+let activity = {
+    last_activity: Date.now(),
+    timeout: 60000
+};
 let eel;
-
+let username = sessionStorage.getItem("username");
 async function hidden(state) {
     isHidden = state;
     return isHidden;
@@ -44,11 +47,14 @@ let init = () => {
     try {
         eel.get_server_ip().then((ip) => {
             eel.log("Connecting to server " + ip);
-            socket = io(`http://${ip}:51998`);
-
+            socket = io(`${ip}`);
+            socket.on('error', function () {
+                document.write("Sorry, there seems to be an issue with the connection!");
+            })
             socket.emit("command", "history", (e) => {
                 showMessages(e);
             });
+            socket.emit('user_info',{name:username})
             // LISTENERS
             socket.on("message", function (data) {
                 showMessages(data);
@@ -62,12 +68,12 @@ let init = () => {
                         let mems = document.querySelector("#mems");
                         mems.innerHTML = "";
                         for (let i of data.data.members) {
-                            mems.innerHTML += `<span>${i}</span>`;
+                            eel.log(i);
+                            mems.innerHTML += `<span>${i.ip}: ${i.name}</span>`;
                         }
                     }
                 }
             });
-
             socket.on("edited", (data) => {
                 document.querySelector(
                     `span[data-id="${data.uid}"]`
@@ -94,8 +100,6 @@ let init = () => {
     }
     noti = document.querySelector("#show_notif");
     chats = document.querySelector("#chats");
-
-    let username = sessionStorage.getItem("username");
     document.querySelector("#inp_name").innerHTML = username;
     document
         .querySelector("#input textarea")
@@ -119,7 +123,14 @@ let init = () => {
                 });
             }
         });
-}; // Close onload
+    // AFK check
+    document.addEventListener('keypress', activate);
+    document.addEventListener('mousemove', activate);
+}; // Close init
+
+let activate = (e) => {
+    activity.last_activity = Date.now();
+}
 
 function showMessages(msgs) {
     for (let i of msgs) {
@@ -127,9 +138,10 @@ function showMessages(msgs) {
         child.classList.add("message");
         let p = document.createElement('p');
         p.setAttribute("data-id", i.uid);
+        p.classList.add('reply_p');
         p.innerHTML = `<span class='from'>${i.name} - ${i.from}</span>`;
         if (i.hasOwnProperty("reply") && i.hasOwnProperty("reply_text")) {
-            p.innerHTML += `<span class='reply'>${i.reply_text} <i class="ri-reply-line"></i></span>`;
+            p.innerHTML += `<span class='reply'>${i.reply_text}</span><i class="ri-reply-line"></i></span>`;
         }
         p.innerHTML += `<span class='text'>${htmlEnc(i.text)}</span>`;
         let opts = document.createElement("div");
@@ -139,7 +151,7 @@ function showMessages(msgs) {
             child.classList.add("me");
             opts.innerHTML += `
             <button class='opt_btn' onclick='edit(this,"${i.uid}")'><i class="ri-edit-line"></i></button>
-            <button class='opt_btn' onclick='del_msg("${i.uid}")'><i class="ri-close-circle-line"></i></i></button>
+            <button class='opt_btn' onclick='del_msg("${i.uid}")'><i class="ri-close-circle-line"></i></button>
             `;
         }
         p.addEventListener("click", () => {
@@ -171,7 +183,8 @@ function toBottom() {
 
 function notify(title, text) {
     try {
-        eel.send_notify(text);
+        force = (activity.last_activity + activity.timeout) < Date.now();
+        eel.send_notify(text, force);
     } catch ({ name, msg }) {
         if (name == "ReferenceError") {
             console.log(`Notification ${text}`);
