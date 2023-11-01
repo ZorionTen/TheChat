@@ -26,13 +26,13 @@ pip install -r req.txt
 # pyinstaller --onefile ./client.py --add-data 'views:views'
 echo 'Installing...'
 cat <<EOL > "$OUTPUT_FILE"
-SRC="/home/zaid-1942/.TheChat/src/client"
-echo 'new log'>>"$SRC/../../log"
-pwd>>"$SRC/../../log"
-cd "$SRC">>"$SRC/../../log"
-pwd>>"$SRC/log"
-source .env/bin/activate>>"$SRC/../../log"
-python client.py>>"$SRC/../../log"
+SRC="$HOME/.TheChat/src/client"
+echo 'new log'>>"\$SRC/../../log"
+pwd>>"\$SRC/../../log"
+cd "\$SRC">>"\$SRC/../../log"
+pwd>>"\$SRC/log"
+source .env/bin/activate>>"\$SRC/../../log"
+python client.py>>"\$SRC/../../log"
 EOL
 chmod +x "$OUTPUT_FILE"
 ln -s "$OUTPUT_FILE" "$HOME/.local/bin/thechat"
