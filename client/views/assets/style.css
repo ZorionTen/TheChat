@@ -4,24 +4,25 @@
 
 :root {
     --text-color: white;
-    --text-dark-color: black;
-    --accent-color: cyan;
-    --accent-dark-color: darkcyan;
-    --accent-darker-color: rgb(0, 85, 85);
-    --bg-color: #0f2f7f;
-    --bg-alpha: #0f2f7f;
-    --bg-darker-color: #002f4f;
-    --void-color: #070f1f;
+    --text-dark-color: navy;
+    --accent-color: dodgerblue;
+    --accent-dark-color: #0b3d91;
+    --accent-darker-color: #062856;
+    --bg-color: #0a1444;
+    --bg-alpha: #0a1444;
+    --bg-darker-color: #07102d;
+    --void-color: #050919;
 
     --text-alpha: rgba(255, 255, 255, 0.3);
-    --text-dark-alpha: rgba(0, 0, 0, 0.3);
-    --accent-alpha: rgba(0, 255, 255, 0.3);
-    --accent-dark-alpha: rgba(0, 139, 139, 0.3);
-    --accent-darker-alpha: rgba(0, 85, 85, 0.3);
-    --bg-alpha: rgba(15, 47, 127, 0.3);
-    --bg-darker-alpha: rgba(0, 47, 79, 0.3);
-    --void-alpha: rgba(7, 15, 31, 0.3);
+    --text-dark-alpha: rgba(0, 0, 128, 0.3);
+    --accent-alpha: rgba(30, 144, 255, 0.3);
+    --accent-dark-alpha: rgba(11, 61, 145, 0.3);
+    --accent-darker-alpha: rgba(6, 40, 86, 0.3);
+    --bg-alpha: rgba(10, 20, 68, 0.3);
+    --bg-darker-alpha: rgba(7, 16, 45, 0.3);
+    --void-alpha: rgba(5, 9, 25, 0.3);
 }
+
 
 body {
     background-color: var(--void-color);
@@ -178,6 +179,9 @@ input::placeholder {
     user-select: text;
     white-space: pre;
     overflow-y: scroll;
+    width:fill;
+    overflow-x: auto;
+    white-space: pre-wrap;
 }
 
 .message {
@@ -186,14 +190,14 @@ input::placeholder {
     position: relative;
     overflow: hidden;
 }
-.reply_p i {
+.message_p i {
     position: absolute;
     right:10px;
     top:25%
 }
 
 .message p {
-    background-color: var(--bg-darker-alpha);
+    background-color: var(--accent-dark-alpha);
     width: fit-content;
     max-width: 60vw;
     max-height: 400px;
@@ -234,7 +238,7 @@ input::placeholder {
 }
 
 .message .reply {
-    background-color: var(--text-dark-alpha);
+    background-color: var(--accent-alpha);
     padding: 10px;
     margin: 10px 0px 10px 0px;
     border-radius: inherit;
