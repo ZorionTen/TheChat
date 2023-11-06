@@ -1,48 +1,20 @@
 let chats;
 let id;
-let noti;
 let isHidden = true;
 let socket;
 let activity = {
     last_activity: Date.now(),
-    timeout: 60000
+    timeout: 30000
 };
 let eel;
+let tags;
 let username = sessionStorage.getItem("username");
+let tagging=false;
+
 async function hidden(state) {
     isHidden = state;
     return isHidden;
 }
-// Exposing functions to eel
-try {
-    eel.expose("toTray");
-    function toTray() {
-        socket.close();
-        try {
-            eel.to_tray();
-            isHidden = true;
-            eel.log("Hidden");
-        } catch (e) {
-            console.log(e);
-            return "error";
-        }
-    }
-    eel.expose("fromTray");
-    function fromTray() {
-        try {
-            isHidden = false;
-            window.resizeTo(1600, 800);
-        } catch (e) {
-            return "error";
-        }
-        return 12;
-    }
-} catch ({ name, msg }) {
-    if (name == "ReferenceError") {
-        console.log(`No eel, not exposed`);
-    }
-}
-
 let init = () => {
     try {
         eel.get_server_ip().then((ip) => {
@@ -54,7 +26,7 @@ let init = () => {
             socket.emit("command", "history", (e) => {
                 showMessages(e);
             });
-            socket.emit('user_info',{name:username})
+            socket.emit('user_info', { name: username })
             // LISTENERS
             socket.on("message", function (data) {
                 showMessages(data);
@@ -68,8 +40,7 @@ let init = () => {
                         let mems = document.querySelector("#mems");
                         mems.innerHTML = "";
                         for (let i of data.data.members) {
-                            eel.log(i);
-                            mems.innerHTML += `<span>${i.ip}: ${i.name}</span>`;
+                            mems.innerHTML += `<span>${i.name}</span>`;
                         }
                     }
                 }
@@ -96,9 +67,9 @@ let init = () => {
     } catch ({ name, msg }) {
         if (name == "ReferenceError") {
             console.log(`No eel, You're fucked`);
+            alert('Fatal error: [NO EEL]');
         }
     }
-    noti = document.querySelector("#show_notif");
     chats = document.querySelector("#chats");
     document.querySelector("#inp_name").innerHTML = username;
     document
@@ -121,13 +92,31 @@ let init = () => {
                     name: username,
                     reply: reply_to,
                 });
+            } else if (e.key == "@") {
+                show_tags();
+            }
+            if (tagging) {
+                if (e.key = "ArrowDown") {
+                    console.log('dpwn');
+                } else if (e.key = 'ArrowUp') {
+                    console.log('up');
+                }
             }
         });
     // AFK check
     document.addEventListener('keypress', activate);
     document.addEventListener('mousemove', activate);
-}; // Close init
 
+    // Prepare tags_menu
+    tags = document.querySelector('tags_menu');
+    tags.style = { 'display': "none", "opacity": "0" };
+}; // Close init
+let showTags = () => {
+    tagging = true;
+    tags.style.display="block";
+    tags.style.opacity="1";
+
+}
 let activate = (e) => {
     activity.last_activity = Date.now();
 }
@@ -138,7 +127,7 @@ function showMessages(msgs) {
         child.classList.add("message");
         let p = document.createElement('p');
         p.setAttribute("data-id", i.uid);
-        p.classList.add('reply_p');
+        p.classList.add('message_p');
         p.innerHTML = `<span class='from'>${i.name} - ${i.from}</span>`;
         if (i.hasOwnProperty("reply") && i.hasOwnProperty("reply_text")) {
             p.innerHTML += `<span class='reply'>${i.reply_text}</span><i class="ri-reply-line"></i></span>`;
@@ -161,8 +150,12 @@ function showMessages(msgs) {
         child.appendChild(opts);
         chats.append(child);
     }
-    let froms = msgs.map((msg) => msg.name).join(", ");
-    notify("New Messages", `from ${froms.substring(0, 15)}...`);
+    if (msgs.length == 1) {
+        notify("New Message", `${msgs[0].name}: ${msgs[0].text.substring(0, 15)}`)
+    } else {
+        let froms = msgs.map((msg) => msg.name).join(", ");
+        notify("New Messages", `from ${froms.substring(0, 15)}...`);
+    }
     toBottom();
 }
 
@@ -183,8 +176,10 @@ function toBottom() {
 
 function notify(title, text) {
     try {
-        force = (activity.last_activity + activity.timeout) < Date.now();
-        eel.send_notify(text, force);
+         if((activity.last_activity + activity.timeout) < Date.now()){
+            eel.visible(false);
+         }
+        eel.send_notify(text);
     } catch ({ name, msg }) {
         if (name == "ReferenceError") {
             console.log(`Notification ${text}`);

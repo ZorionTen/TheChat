@@ -63,9 +63,9 @@ class Api:
         return False
 
     def from_tray(self):
-        self.hidden = False
-        if self.window:
+        if self.window and self.hidden:
             self.window.restore()
+            self.hidden = False
         return 200
 
     def quit(self):

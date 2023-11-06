@@ -30,13 +30,13 @@ def get_image():
     return def_icon
 
 
-def get_dot_image(path):
+def get_dot_image(path=ICON_PATH):
     global noti_icon
     if not noti_icon:
         image = Image.open(path)
         draw = ImageDraw.Draw(image)
-        dot_position = (50, 50)  # Change this to the desired position
-        dot_radius = 5  # Change this to the desired size
+        dot_radius = image.size[0]//2  # Change this to the desired size
+        dot_position = (image.size[0], image.size[1])  # Change this to the desired position
         dot_color = (255, 0, 0)
         draw.ellipse([dot_position[0] - dot_radius, dot_position[1] - dot_radius,
                       dot_position[0] + dot_radius, dot_position[1] + dot_radius],
@@ -46,7 +46,7 @@ def get_dot_image(path):
 
 
 def call():
-    _icon.icon = get_image()
+    _icon.icon = get_image() 
     click_callback() if click_callback else print('No callback')
 
 
@@ -59,20 +59,30 @@ async def create_notify(text):
         sound=True,
     )
 
-
 def notify(text):
+    _icon.icon=get_dot_image()
     asyncio.run_coroutine_threadsafe(create_notify(text),loop)
-    _icon.icon = get_dot_image(ICON_PATH)
-    # os.system(f'notify-send -i {ICON_PATH} "TheChat - Alert" "{text}"')
+
+def make_icon():
+    return icon('TheChat',
+        icon=get_image(),menu=menu(item('restore',call,default=True)))
 
 def start():
     global _icon
-    _icon = icon(
-        'TheChat',
-        icon=get_image())
-    _icon.run_detached()
     Thread(target=start_loop).start()
+    _icon=make_icon()
+    _icon.run_detached()
+        
 
 
 if __name__ == '__main__':
-    notify('TEST')
+    print(f'kill -9 {os.getpid()}')
+    ICON_PATH = "/home/zaid-1942/Programs/TheChat/client/views/favicon.ico"
+    # get_dot_image().save('./tmp.png')
+    start()
+    notify('33')
+    try:
+        while True:
+            asyncio.sleep(1)
+    except KeyboardInterrupt:
+        exit(0)

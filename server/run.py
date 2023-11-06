@@ -26,7 +26,7 @@ app = socketio.WSGIApp(
 
 
 def delete_old_messages():
-    cutoff_time = datetime.now() - timedelta(days=1)
+    cutoff_time = datetime.now() - timedelta(days=30)
     old_entries = messages.search((query.sat < cutoff_time.timestamp()))
     for entry in old_entries:
         messages.remove(query.sat == entry['sat'])
