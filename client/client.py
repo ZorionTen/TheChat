@@ -1,4 +1,4 @@
-import requests
+import subprocess
 import sys
 import socket
 import json
@@ -76,7 +76,9 @@ class Api:
     def update_client(self, url):
         file_path = os.environ['HOME']+'/.TheChat/src'
         os.chdir(file_path)
-        os.system('git pull origin main')
+        result = subprocess.run(['git','pull'],stdout=subprocess.PIPE).stdout.decode()
+        if 'Already up to date' not in result:
+            self.window.evaluate_js('alert("Updated, Please restart the app")')
 
 
 api = Api()

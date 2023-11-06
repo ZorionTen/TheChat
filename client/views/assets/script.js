@@ -108,15 +108,15 @@ let init = () => {
     document.addEventListener('mousemove', activate);
 
     // Prepare tags_menu
-    tags = document.querySelector('tags_menu');
-    tags.style = { 'display': "none", "opacity": "0" };
+    // tags = document.querySelector('#tags_menu');
+    // tags.style = { 'display': "none", "opacity": "0" };
 }; // Close init
-let showTags = () => {
-    tagging = true;
-    tags.style.display="block";
-    tags.style.opacity="1";
+// let showTags = () => {
+//     tagging = true;
+//     tags.style.display="block";
+//     tags.style.opacity="1";
 
-}
+// }
 let activate = (e) => {
     activity.last_activity = Date.now();
 }
