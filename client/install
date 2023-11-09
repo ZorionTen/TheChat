@@ -41,7 +41,7 @@ DESKTOP_FILE="$HOME/.config/autostart/thechat.desktop"
 cat <<EOL > "$DESKTOP_FILE"
 [Desktop Entry]
 Type=Application
-Icon=$HOME/.TheChat/src/client/views/favicon.ico
+Icon=$HOME/.TheChat/src/client/views/favicon.png
 Exec=thechat
 Terminal=true
 Hidden=false
