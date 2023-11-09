@@ -60,9 +60,6 @@ let init = () => {
             document.querySelector('#input').addEventListener('transitionend', (e) => {
                 toBottom();
             })
-
-            checkUpdate();
-            setInterval(checkUpdate, 12 * 3600000);
         });
     } catch ({ name, msg }) {
         if (name == "ReferenceError") {
@@ -224,17 +221,6 @@ function edit(elem, uid) {
 
 function del_msg(uid) {
     socket.emit("delete", { uid: uid });
-}
-
-function checkUpdate() {
-    socket.emit("update", {}, (data) => {
-        if (data.update) {
-            eel.log("Updating...");
-            eel.update_client(data.url);
-        } else {
-            eel.log("no update");
-        }
-    });
 }
 
 function reply(uid) {
