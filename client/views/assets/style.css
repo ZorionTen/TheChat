@@ -248,6 +248,7 @@ input::placeholder {
     max-width: 95%;
     max-height: 50px;
     overflow: hidden;
+    font-size: 14px;
 }
 
 .opt_btn {

@@ -10,3 +10,4 @@ client/dist
 server/database/*
 events.json
 *.spec
+client/install-dev

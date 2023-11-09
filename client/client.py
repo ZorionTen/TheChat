@@ -11,7 +11,7 @@ environ_append("QTWEBENGINE_CHROMIUM_FLAGS", "--no-sandbox", "--no-sandbox")
 try:
     BASE_PATH = sys._MEIPASS
 except AttributeError:
-    BASE_PATH = '.'
+    BASE_PATH = os.path.dirname(__file__)
 print(BASE_PATH)
 try:
     config = json.load(open(BASE_PATH+'/config.json'))
@@ -37,10 +37,12 @@ class Api:
         self.kill_flag = False
         self.hidden = False
 
-    def visible(self,value):
-        self.hidden=not value
+    def visible(self, value):
+        current = self.hidden
+        self.hidden = not value
+        return current
 
-    def send_notify(self, text,force= False):
+    def send_notify(self, text, force=False):
         if self.hidden or force:
             sys_tray.notify(text)
 
@@ -69,32 +71,37 @@ class Api:
         return 200
 
     def quit(self):
-        os.system(f"kill -9 {os.getpid()}")
+        # os.system(f"kill -9 {os.getpid()}")
         self.kill_flag = True
         self.window.destroy()
 
     def update_client(self, url):
         file_path = os.environ['HOME']+'/.TheChat/src'
         os.chdir(file_path)
-        result = subprocess.run(['git','pull'],stdout=subprocess.PIPE).stdout.decode()
+        result = subprocess.run(
+            ['git', 'pull'], stdout=subprocess.PIPE).stdout.decode()
         if 'Already up to date' not in result:
             self.window.evaluate_js('alert("Updated, Please restart the app")')
+        print(result)
 
 
-api = Api()
-window = wv.create_window(
-    title='TheChat', transparent=True, background_color='#202020', url=f'{PATH}/login.html', js_api=api,
-    min_size=(1200, 700))
-api.window = window
-# Register events
-window.events.closing += api.to_tray
-window.events.restored += api.from_tray
-window.events.minimized += lambda: api.visible(False)
-
-if __name__ == '__main__':
+def main():
+    api = Api()
+    window = wv.create_window(
+        title='TheChat', transparent=True, background_color='#202020', url=f'{PATH}/login.html', js_api=api,
+        min_size=(1200, 700))
+    api.window = window
+    # Register events
+    window.events.closing += api.to_tray
+    window.events.restored += api.from_tray
+    window.events.minimized += lambda: api.visible(False)
     print(f'Starting server on port {PORT}')
     print(f'Serving files at {PATH}')
-    sys_tray.ICON_PATH = PATH+'/favicon.ico'
+    sys_tray.ICON_PATH = PATH+'/favicon.png'
     sys_tray.click_callback = api.from_tray
     sys_tray.start()
     wv.start(debug='--dev' in sys.argv, http_server=True)
+    sys_tray.stop()
+
+if __name__ == '__main__':
+    main()
