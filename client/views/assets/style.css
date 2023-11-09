@@ -1,20 +1,33 @@
 * {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: "Courier New", Courier, monospace;
 }
 
 :root {
     --text-color: white;
-    --text-dark-color:black;
-    --accent-color: cyan;
-    --accent-dark-color: darkcyan;
-    --accent-darker-color: rgb(0, 85, 85);
-    --bg-color: #0f2f7f;
-    --bg-darker-color: #002f4f;
-    --void-color: #070f1f;
+    --text-dark-color: navy;
+    --accent-color: dodgerblue;
+    --accent-dark-color: #0b3d91;
+    --accent-darker-color: #062856;
+    --bg-color: #0a1444;
+    --bg-alpha: #0a1444;
+    --bg-darker-color: #07102d;
+    --void-color: #050919;
+
+    --text-alpha: rgba(255, 255, 255, 0.3);
+    --text-dark-alpha: rgba(0, 0, 128, 0.3);
+    --accent-alpha: rgba(30, 144, 255, 0.3);
+    --accent-dark-alpha: rgba(11, 61, 145, 0.3);
+    --accent-darker-alpha: rgba(6, 40, 86, 0.3);
+    --bg-alpha: rgba(10, 20, 68, 0.3);
+    --bg-darker-alpha: rgba(7, 16, 45, 0.3);
+    --void-alpha: rgba(5, 9, 25, 0.3);
 }
+
 
 body {
     background-color: var(--void-color);
+    background-image: url("/assets/bg.png");
+    background-blend-mode: color-burn;
     color: var(--text-color);
     font-family: "Courier New", Courier, monospace;
     font-size: 18px;
@@ -23,7 +36,7 @@ body {
     height: 100vh;
     width: 100vw;
     margin: 0px;
-    overflow: auto;
+    overflow: hidden;
 }
 
 div {
@@ -31,7 +44,8 @@ div {
     box-sizing: border-box;
 }
 
-input {
+input,
+textarea {
     color: var(--text-color);
 }
 
@@ -56,9 +70,12 @@ input::placeholder {
 .main div {
     padding: 10px;
 }
+
 .sidebar {
     width: 240px;
+    background-color: var(--bg-darker-color);
 }
+
 #mems {
     width: fit-content;
     min-width: 100%;
@@ -78,7 +95,7 @@ input::placeholder {
     flex-direction: column;
     background-color: var(--accent-dark-color);
     font-size: 16px;
-    width:100%;
+    width: 100%;
 }
 
 #settings input[type="text"] {
@@ -115,6 +132,7 @@ input::placeholder {
 /* width */
 ::-webkit-scrollbar {
     width: 5px;
+    height: 5px;
     border-radius: 10px;
     overflow: hidden;
 }
@@ -137,85 +155,238 @@ input::placeholder {
     background: var(--text-color);
 }
 
-#chats .message {
-    margin: 0px;
-    padding: 0px;
-    width: 100%;
-}
-
-#chats .me {
-    text-align: right;
-}
-
-#chats p {
-    width: fit-content;
-    max-width: 80%;
-    max-height: 400px;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    background-color: var(--bg-darker-color);
-    padding: 20px;
-    scrollbar-width: 0px;
-    padding-top: 0px;
-    display: inline-block;
-    border-radius: 10px;
-}
-
 #chats p::-webkit-scrollbar {
     display: none;
 }
 
 #chats p span {
     display: block;
+    width: auto;
+    padding-top: 10px;
+}
+
+.from {
     font-size: 12px;
     font-weight: bold;
     color: var(--accent-color);
     position: sticky;
     top: 0px;
-    background-color: inherit;
-    width: auto;
-    padding-top: 10px;
 }
 
-#chats .me p {
-    background-color: var(--bg-color);
+.text {
+    font-size: 16px;
+    height: fill;
+    user-select: text;
+    white-space: pre;
+    overflow-y: scroll;
+    width:fill;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.message {
+    margin: 2px;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+}
+.message_p i {
+    position: absolute;
+    right:10px;
+    top:25%
+}
+
+.message p {
+    background-color: var(--accent-dark-alpha);
+    width: fit-content;
+    max-width: 60vw;
+    max-height: 400px;
+    padding: 20px;
+    scrollbar-width: 0px;
+    padding-top: 0px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    margin: 0px;
+    overflow: hidden;
+    backdrop-filter: blur(2px);
+    box-shadow: 0px 10px 5px 0px black;
+}
+
+.me {
+    flex-direction: row-reverse;
+}
+
+.me p {
+    background-color: var(--bg-alpha);
+}
+
+.message .opts {
+    opacity: 0;
+    margin: none;
+    padding: none;
+    transition: 300ms;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 5px;
+}
+
+.message p:hover+.opts,
+.opts:hover {
+    opacity: 1;
+}
+
+.message .reply {
+    background-color: var(--accent-alpha);
+    padding: 10px;
+    margin: 10px 0px 10px 0px;
+    border-radius: inherit;
+    transition: 300ms;
+    width: fit-content;
+    white-space: pre;
+    max-width: 95%;
+    max-height: 50px;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+.opt_btn {
+    margin: 0px;
+    width: fit-content;
+    color: var(--text-color);
+    border: none;
+    padding: 0px;
+    vertical-align: bottom;
+    background-color: var(--bg-dark-color);
+    border-radius: 10px;
+    transition: 300ms;
+    font-size: 18px;
+}
+
+.opt_btn:hover {
+    color: var(--accent-color);
+    font-weight: bolder;
 }
 
 #input {
     display: flex;
-    background-color: var(--accent-dark-color);
+    background-color: transparent;
     border-radius: 0px;
-    padding: inherit 20px inherit 20px;
+    padding: 5px 20px 0px 20px;
     margin: 0px;
     width: 100%;
     overflow: hidden;
+    height: 24px;
+    box-sizing: border-box;
+    transition: 300ms;
+    flex-direction: column;
 }
 
-#input input {
+#input textarea {
     flex: 1;
-    background-color: inherit;
+    background-color: var(--text-alpha);
     outline: none;
     border: none;
+    margin: none;
+    padding: 10px 10px 10px 20px;
     color: var(--text-color);
-    height: 30px;
-    font-size: 18px;
+    height: auto;
+    font-size: 16px;
     font-family: inherit;
+    resize: none;
+    border-radius: 18px 18px 00px 0px;
+    overflow: hidden;
+    transition: 300ms;
+    backdrop-filter: blur(2px);
+}
+
+#input:focus-within,
+#input:hover {
+    height: 96px;
+    /* padding: 0%; */
+}
+
+#input:focus-within textarea,
+#input:hover textarea {
+    overflow-y: scroll;
+    /* border-radius: 0px; */
+    /* background-color: var(--bg-alpha); */
+
+}
+
+#input:focus-within #quote,
+#input:hover #quote {
+    height: 32px;
+}
+
+#bottom_buttons {
+    width: 100%;
+    height: 64px;
+    border: none;
+    background-color: var(--accent-darker-color);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    padding: 0px 10px 0px 0px;
+    box-sizing: border-box;
+}
+
+#hidden_buttons {
+    height: 15px;
+    width: 100%;
+    padding: 0px 5px 0px 5px;
+    background-color: var(--accent-dark-color);
+    transition: 300ms;
+    overflow: hidden;
+    border-radius: 10px 10px 0px 0px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    box-sizing: border-box;
+    margin: none;
+    font-size: 12px;
+}
+
+#hidden_buttons span {
+    position: absolute;
+    left: 50%;
+    top: 0px;
+    color: white;
+    translate: -50%;
+    transition: 300ms;
+}
+
+#hidden_buttons:hover {
+    height: 64px;
+    background-color: var(--accent-darker-color);
+    font-size: 24px;
+}
+
+#hidden_buttons:hover span {
+    color: var(--accent-darker-color);
+}
+
+#hidden_buttons .side_button {
+    filter: none;
+    width: fit-content;
+    font-size: inherit;
+    transition: font-size 0ms;
 }
 
 button.side_button {
-    width: 100%;
-    height: 5%;
+    background: transparent;
     border: none;
+    outline: none;
+    font-size: 24px;
+    color: var(--accent-color);
     transition: 300ms;
-    background-color: var(--accent-darker-color);
-    color: var(--text-color);
 }
 
 button.side_button:hover {
-    background-color: var(--accent-color);
-    font-size: 16px;
-    font-weight: bolder;
-    color: var(--text-dark-color);
+    color: var(--text-color);
 }
 
 #inp_name {
@@ -223,4 +394,36 @@ button.side_button:hover {
     padding: 10px;
     text-align: center;
     font-weight: bolder;
+}
+
+#quote {
+    height: 0px;
+    min-width: 128px;
+    width: 100%;
+    padding: 0px;
+    background-color: var(--accent-darker-alpha);
+    backdrop-filter: blur(10px);
+    border-radius: 0px;
+    display: none;
+    overflow: hidden;
+    vertical-align: text-top;
+    position: relative;
+}
+
+#quote span,
+#quote pre {
+    font-size: 12px;
+    display: inline-block;
+    padding: 0px 5px 0px 5px;
+}
+
+#quote span {
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    font-size: 16px;
+}
+
+.hidden {
+    display: none !important;
 }

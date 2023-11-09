@@ -1,6 +1,13 @@
 .*
+!/.gitignore
 *pycache*
 server/his.json
 server/IPS.json
 client/config.json
-!/.gitignore
+client/events.json
+client/build
+client/dist
+server/database/*
+events.json
+*.spec
+client/install-dev

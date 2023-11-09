@@ -1,57 +1,111 @@
 import eventlet
 import socketio
-import json
+import sys
+import time
+from datetime import datetime, timedelta
+from tinydb import TinyDB, Query, where
+from tinydb.storages import JSONStorage
+from tinydb.middlewares import CachingMiddleware
 
-IPS = json.load(open('IPS.json'))
-IP = '172.16.50.122'
+IP = '0.0.0.0'
 MAX_MESSAGES = 50
 
-WEB_PATH = '/home/cedcoss/Programs/TheChat/client/views'
+UPDATE = "--update" in sys.argv
+UPDATE_URL = 'http://172.16.50.122:51998/download'
 
-messages = []
-try:
-    messages = json.load(open("his.json")) 
-except FileNotFoundError:
-    pass
+# TODO: make web app
+# WEB_PATH = '/home/cedcoss/Programs/TheChat/client/views'
+DB = TinyDB('./database/messages.json', storage=CachingMiddleware(JSONStorage))
+query = Query()
+
+messages = DB.table('messages')
 ips = {}
 sio = socketio.Server(cors_allowed_origins="*")
-app = socketio.WSGIApp(sio, static_files={
-    '/': {'content_type': 'text/html', 'filename': f'{WEB_PATH}/index.html'},
-    '/assets/script.js': {'content_type': 'text/javascript', 'filename': f'{WEB_PATH}/assets/script.js'},
-    '/assets/style.css': {'content_type': 'text/css', 'filename': f'{WEB_PATH}/assets/style.css'},
-})
+app = socketio.WSGIApp(
+    sio, static_files={'/download': '../client/dist/', '': 'client'})
+
+
+def delete_old_messages():
+    cutoff_time = datetime.now() - timedelta(days=30)
+    old_entries = messages.search((query.sat < cutoff_time.timestamp()))
+    for entry in old_entries:
+        messages.remove(query.sat == entry['sat'])
+
+###
+# SERVER
+###
+
 
 @sio.event
 def connect(sid, environ):
-    ips[sid]=environ['REMOTE_ADDR']
+    ips[sid] = {"ip":environ['REMOTE_ADDR']}
     print('connect ', sid)
-    sio.emit('command',{'data':{'ip':environ['REMOTE_ADDR']}},to=sid)
-    sio.emit('command',{'data':{'members':list(ips.values())}})
+    sio.emit('command', {'data': {'ip': environ['REMOTE_ADDR']}}, to=sid)
+    sio.emit('command', {'data': {'members': list(ips.values())}})
+
 
 @sio.event
 def message(sid, data):
-    mes={**data,'from':ips[sid],'sid':sid}
-    mes['s_name'] = IPS.get(mes['from'],'None')
-    messages.append(mes)
-    mes['m_id'] = messages.index(mes)
-    if len(messages)> MAX_MESSAGES:
-        messages.pop(0)
-    json.dump(messages,fp=open('his.json','w'),indent=4)
-    sio.emit('message',[mes])
+    mes = {**data, 'from': ips[sid].get('ip','no-ip'), 'sid': sid,
+           'sat': time.time(), 'uid': f'{sid}_{int(time.time())}'}
+    if len(data.get('reply',""))>0:
+        msg = get_message(sid,{'uid':data['reply']})[0]
+        reply_text = f"{msg['name']}:{msg['text']}"
+        mes = {**mes,'reply_text':reply_text}
+    messages.insert(mes)
+    sio.emit('message', [mes])
 
 
 @sio.event
 def command(sid, data):
-    if data =='history':
-        return messages
-    if data=='members':
+    if data == 'history':
+        delete_old_messages()
+        results = messages.search(query.sat.exists())
+        results.sort(key=lambda x: x['sat'], reverse=False)
+        return results[:50]
+    if data == 'members':
         return ips
+
+@sio.event
+def user_info(sid,data):
+    ips[sid]['name']=data.get('name','no-name') 
+    sio.emit('command', {'data': {'members': list(ips.values())}})
+
+
+@sio.event
+def edit(sid, data):
+    sio.emit('edited', {'uid': data['uid'], "text": data['text']})
+    return {'response': messages.update({'text': data['text']}, Query().uid == data['uid'])}
+
+
+@sio.event
+def delete(sid, data):
+    sio.emit('deleted', {'uid': data['uid']})
+    return {'response': messages.remove(where('uid') == data['uid'])}
+
+
+@sio.event
+def get_message(sid, data):
+    return messages.search(query.uid == data['uid'])
+
 
 @sio.event
 def disconnect(sid):
     del ips[sid]
-    sio.emit('command',{'data':{'members':list(ips.values())}})
+    sio.emit('command', {'data': {'members': list(ips.values())}})
     print('disconnect ', sid)
 
+
+@sio.event
+def update(sid,data):
+    return {"update":UPDATE,'url':UPDATE_URL}
+
+
+
 if __name__ == '__main__':
-    server = eventlet.wsgi.server(eventlet.listen((IP, 51998)),app)
+    try:
+        server = eventlet.wsgi.server(eventlet.listen((IP, 51998)), app)
+    except Exception as e:
+        print(e)
+    finally:
+        DB.close()
