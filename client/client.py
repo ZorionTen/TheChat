@@ -75,15 +75,6 @@ class Api:
         self.kill_flag = True
         self.window.destroy()
 
-    def update_client(self, url):
-        file_path = os.environ['HOME']+'/.TheChat/src'
-        os.chdir(file_path)
-        result = subprocess.run(
-            ['git', 'pull'], stdout=subprocess.PIPE).stdout.decode()
-        if 'Already up to date' not in result:
-            self.window.evaluate_js('alert("Updated, Please restart the app")')
-        print(result)
-
 
 def main():
     api = Api()
