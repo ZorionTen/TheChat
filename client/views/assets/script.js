@@ -173,7 +173,12 @@ function htmlEnc(s) {
 function toBottom() {
     chats.scrollTo(0, chats.scrollHeight);
 }
-
+function testNotify()
+{
+    let vis = eel.visible(false);
+    eel.send_notify('This is a test notification');
+    eel.visible(vis);
+}
 function notify(title, text) {
     try {
          if((activity.last_activity + activity.timeout) < Date.now()){

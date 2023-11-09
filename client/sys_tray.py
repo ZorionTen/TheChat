@@ -7,7 +7,7 @@ from pystray import Icon as icon, Menu as menu, MenuItem as item
 from PIL import Image, ImageDraw
 from threading import Thread
 
-ICON_PATH = 'views/favicon.ico'
+ICON_PATH = 'views/favicon.png'
 notifier = dn.DesktopNotifier()
 def_icon = None
 noti_icon = None
@@ -18,7 +18,7 @@ loop = None
 def start_loop():
     global loop
     try:
-        loop = asyncio.get_event_loop()    
+        loop = asyncio.get_event_loop() 
     except RuntimeError:
         loop = asyncio.new_event_loop()
     loop.run_forever()
@@ -44,7 +44,8 @@ def get_dot_image(path=ICON_PATH):
         noti_icon = image
     return noti_icon
 
-
+def stop():
+    Thread(target=_icon.stop).start()
 def call():
     _icon.icon = get_image() 
     click_callback() if click_callback else print('No callback')
@@ -60,7 +61,7 @@ async def create_notify(text):
     )
 
 def notify(text):
-    _icon.icon=get_dot_image()
+    _icon.icon=get_dot_image(ICON_PATH)
     asyncio.run_coroutine_threadsafe(create_notify(text),loop)
 
 def make_icon():
@@ -77,7 +78,7 @@ def start():
 
 if __name__ == '__main__':
     print(f'kill -9 {os.getpid()}')
-    ICON_PATH = "/home/zaid-1942/Programs/TheChat/client/views/favicon.ico"
+    ICON_PATH = "/home/zaid-1942/Programs/TheChat/client/views/favicon.png"
     # get_dot_image().save('./tmp.png')
     start()
     notify('33')

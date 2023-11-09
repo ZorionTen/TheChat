@@ -23,7 +23,6 @@ $PYTHON -m venv .env
 source .env/bin/activate
 pip install --upgrade pip
 pip install -r req.txt
-# pyinstaller --onefile ./client.py --add-data 'views:views'
 echo 'Installing...'
 cat <<EOL > "$OUTPUT_FILE"
 SRC="$HOME/.TheChat/src/client"
@@ -32,16 +31,17 @@ pwd>>"\$SRC/../../log"
 cd "\$SRC">>"\$SRC/../../log"
 pwd>>"\$SRC/log"
 source .env/bin/activate>>"\$SRC/../../log"
-python client.py>>"\$SRC/../../log"
+python run.py>>"\$SRC/../../log"
 EOL
 chmod +x "$OUTPUT_FILE"
+rm "$HOME/.local/bin/thechat"
 ln -s "$OUTPUT_FILE" "$HOME/.local/bin/thechat"
 # Step 2: Create a desktop entry file for autostart
 DESKTOP_FILE="$HOME/.config/autostart/thechat.desktop"
 cat <<EOL > "$DESKTOP_FILE"
 [Desktop Entry]
 Type=Application
-Icon=/home/zaid-1942/.TheChat/src/client/views/favicon.ico
+Icon=$HOME/.TheChat/src/client/views/favicon.ico
 Exec=thechat
 Terminal=true
 Hidden=false
@@ -54,17 +54,3 @@ echo "Adding to apps"
 sudo cp $DESKTOP_FILE $APPS
 # Step 3: Check the service status
 echo "Chat app autostart setup complete"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
